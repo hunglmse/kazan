@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,20 +47,30 @@ public class KazanController {
 	}
 	
 	@RequestMapping(method=RequestMethod.POST, path="/alert/add")
-	public @ResponseBody String addAlert(@RequestBody AlertRequestWrapper alertWrapper) {
-		System.out.println("aa:" + alertWrapper.getUsername());
-		int userId = userRepository.getIdByUsername(alertWrapper.getUsername());
-		int groupId = ugrRepository.getGroupIdByUserIdAlias(userId, alertWrapper.getGroupname());
+	public @ResponseBody ResponseEntity<String> addAlert(@RequestBody AlertRequestWrapper alertWrapper) {
 		Alert newAlert = new Alert();
+		try {
+			int userId = userRepository.getIdByUsername(alertWrapper.getUsername());
+			newAlert.setUserId(userId);
+			try {
+				int groupId = ugrRepository.getGroupIdByUserIdAlias(userId, alertWrapper.getGroupname());
+				newAlert.setGroupId(groupId);
+			} catch(Exception e) {
+				return new ResponseEntity<>("Khong tim thay group_id!", HttpStatus.UNAUTHORIZED);
+			}
+		} catch(Exception e) {
+			return new ResponseEntity<>("Khong tim thay username!", HttpStatus.UNAUTHORIZED);
+		}		
 		newAlert.setAlertTime(new Date());
 		newAlert.setContent(alertWrapper.getContent());
 		newAlert.setImageUrl(alertWrapper.getImage_url());
-		newAlert.setUserId(userId);
-		newAlert.setGroupId(groupId);
 		newAlert.setSended(0);
 		newAlert.setAlertType(alertWrapper.getType());
-		alertRepository.add(newAlert);
-		return alertWrapper.getContent();
+		Alert resultAlert = alertRepository.add(newAlert);
+		if (null == resultAlert) {
+			return new ResponseEntity<>("Co loi khi them alert!", HttpStatus.UNAUTHORIZED);
+		}
+		return new ResponseEntity<String>("Them alert thanh cong!", HttpStatus.ACCEPTED);
 	}
 	
 	@RequestMapping(path="/object/all")
