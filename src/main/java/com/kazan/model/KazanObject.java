@@ -13,71 +13,53 @@ import javax.persistence.TemporalType;
 @Entity
 @Table(name = "OBJECT")
 public class KazanObject {
-	
+
 	@Id
 	@GeneratedValue
-	@Column(name="object_id")
+	@Column(name = "object_id")
 	private Integer objectId;
-	
-	@Column(name="symbol")
+
+	@Column(name = "symbol")
 	private String symbol;
-	
-	@Column(name="objprop_type")
+
+	@Column(name = "objprop_type")
 	private Integer objprop_type;
-	
-	@Column(name="objprop_time1")
+
+	@Column(name = "objprop_time1")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date objprop_time1;
-	
-	@Column(name="objprop_time2")
+
+	@Column(name = "objprop_time2")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date objprop_time2;
-	
-	@Column(name="objprop_price1")
+
+	@Column(name = "objprop_price1")
 	private Double objprop_price1;
-	
-	@Column(name="objprop_price2")
+
+	@Column(name = "objprop_price2")
 	private Double objprop_price2;
 
-	@Column(name="objprop_width")
+	@Column(name = "objprop_width")
 	private Integer objprop_width;
-	
-	@Column(name="objprop_color")
+
+	@Column(name = "objprop_color")
 	private Integer objprop_color;
-	
-	@Column(name="objprop_scale")
-	private Double objprop_scale;	
-	
-	@Column(name="updated_date")
+
+	@Column(name = "objprop_scale")
+	private Double objprop_scale;
+
+	@Column(name = "updated_date")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updated_date;
 
-	@Column(name="user_id")
+	@Column(name = "user_id")
 	private Integer userId;
-	
-	@Column(name="group_id")
-	private Integer groupId;
-	
-	public KazanObject() {
-		
-	}
 
-	public KazanObject(String symbol, Integer objprop_type, Date objprop_time1, Date objprop_time2,
-			Double objprop_price1, Double objprop_price2, Integer objprop_width, Integer objprop_color,
-			Double objprop_scale, Date updated_date, Integer userId, Integer groupId) {
-		super();
-		this.symbol = symbol;
-		this.objprop_type = objprop_type;
-		this.objprop_time1 = objprop_time1;
-		this.objprop_time2 = objprop_time2;
-		this.objprop_price1 = objprop_price1;
-		this.objprop_price2 = objprop_price2;
-		this.objprop_width = objprop_width;
-		this.objprop_color = objprop_color;
-		this.objprop_scale = objprop_scale;
-		this.updated_date = updated_date;
-		this.userId = userId;
-		this.groupId = groupId;
+	@Column(name = "group_id")
+	private Integer groupId;
+
+	public KazanObject() {
+
 	}
 
 	public Integer getUserId() {
@@ -183,5 +165,5 @@ public class KazanObject {
 	public void setObjprop_scale(Double objprop_scale) {
 		this.objprop_scale = objprop_scale;
 	}
-	
+
 }

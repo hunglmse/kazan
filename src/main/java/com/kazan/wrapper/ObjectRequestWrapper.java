@@ -2,6 +2,8 @@ package com.kazan.wrapper;
 
 import java.util.List;
 
+import com.kazan.model.KazanObject;
+
 public class ObjectRequestWrapper {
 	private String username;
 	private String password;
@@ -11,7 +13,7 @@ public class ObjectRequestWrapper {
 	private String accountName;
 	private String accountNumber;
 	private String accountServer;
-	private List<ObjectWrapper> objects;
+	private List<KazanObject> objects;
 	public String getUsername() {
 		return username;
 	}
@@ -60,10 +62,10 @@ public class ObjectRequestWrapper {
 	public void setAccountServer(String accountServer) {
 		this.accountServer = accountServer;
 	}
-	public List<ObjectWrapper> getObjects() {
+	public List<KazanObject> getObjects() {
 		return objects;
 	}
-	public void setObjects(List<ObjectWrapper> objects) {
+	public void setObjects(List<KazanObject> objects) {
 		this.objects = objects;
 	}	
 }

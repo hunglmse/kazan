@@ -86,13 +86,13 @@ public class KazanController {
 			e.printStackTrace();
 			return new ResponseEntity<String>("Cannot delete object!", HttpStatus.UNAUTHORIZED);
 		}
-		List<ObjectWrapper> objects = wrapperObject.getObjects();
+		List<KazanObject> objects = wrapperObject.getObjects();
 		if (null != objects) {
-			for (ObjectWrapper ow : objects) {
-				KazanObject ko = new KazanObject(ow.getSymbol(), ow.getObjprop_type(), 
-												new Date(Long.parseLong(ow.getObjprop_time1())), new Date(Long.parseLong(ow.getObjprop_time2())),
-												ow.getObjprop_price1(), ow.getObjprop_price2(), ow.getObjprop_width(), ow.getObjprop_color(), 
-												ow.getObjprop_scale(), new Date(), userId, groupId);
+			for (KazanObject ko : objects) {
+				ko.setSymbol(wrapperObject.getSymbol());
+				ko.setUserId(userId);
+				ko.setGroupId(groupId);
+				ko.setUpdated_date(new Date());
 				objectRepository.add(ko);
 			}
 			Alert newAlert = new Alert();
@@ -118,12 +118,10 @@ public class KazanController {
 		if (-1 == userId) {
 			return new ResponseEntity<String>("Username not found!", HttpStatus.UNAUTHORIZED);
 		}		
-		System.out.println(wrapperObject.getGroupName() + "," + userId);
 		int groupId = ugrRepository.getGroupIdByUserIdAlias(userId, wrapperObject.getGroupName());
 		if (-1 == groupId) {
 			return new ResponseEntity<String>("Group not found!", HttpStatus.UNAUTHORIZED);
 		}
-		System.out.println(wrapperObject.getGroupName() + "," + userId + "," + groupId);
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			return new ResponseEntity<String>(mapper.writeValueAsString(objectRepository.getBySymbolUserGroup(wrapperObject.getSymbol(), userId, groupId)), HttpStatus.ACCEPTED);
