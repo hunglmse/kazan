@@ -6,10 +6,10 @@ public class AlertRequestWrapper {
 	private String groupname;
 	private String content;
 	private String image_url;
-	private Integer TYPE;
-	private String AccountName;
-	private String AccountNumber;
-	private String AccountServer;
+	private Integer type;
+	private String accountName;
+	private String accountNumber;
+	private String accountServer;
 	public String getUsername() {
 		return username;
 	}
@@ -40,28 +40,28 @@ public class AlertRequestWrapper {
 	public void setImage_url(String image_url) {
 		this.image_url = image_url;
 	}
-	public Integer getTYPE() {
-		return TYPE;
+	public Integer getType() {
+		return type;
 	}
-	public void setTYPE(Integer tYPE) {
-		TYPE = tYPE;
+	public void setType(Integer tYPE) {
+		type = tYPE;
 	}
 	public String getAccountName() {
-		return AccountName;
+		return accountName;
 	}
 	public void setAccountName(String accountName) {
-		AccountName = accountName;
+		this.accountName = accountName;
 	}
 	public String getAccountNumber() {
-		return AccountNumber;
+		return accountNumber;
 	}
 	public void setAccountNumber(String accountNumber) {
-		AccountNumber = accountNumber;
+		this.accountNumber = accountNumber;
 	}
 	public String getAccountServer() {
-		return AccountServer;
+		return accountServer;
 	}
 	public void setAccountServer(String accountServer) {
-		AccountServer = accountServer;
+		this.accountServer = accountServer;
 	}
 }

@@ -16,6 +16,8 @@ import com.kazan.model.Alert;
 import com.kazan.model.KazanObject;
 import com.kazan.repository.AlertRepository;
 import com.kazan.repository.ObjectRepository;
+import com.kazan.repository.UserGroupRoleRepository;
+import com.kazan.repository.UserRepository;
 import com.kazan.utils.KazanStringUtils;
 import com.kazan.wrapper.AlertRequestWrapper;
 import com.kazan.wrapper.ObjectWrapper;
@@ -31,22 +33,32 @@ public class KazanController {
 	@Autowired
 	private AlertRepository alertRepository;
 	
+	@Autowired
+	private UserRepository userRepository;
+	
+	@Autowired
+	private UserGroupRoleRepository ugrRepository;
+	
 	@RequestMapping(path="/alert/all")
 	public @ResponseBody List<Alert> getAllAlerts() {
 		return alertRepository.getAll();
 	}
 	
 	@RequestMapping(method=RequestMethod.POST, path="/alert/add")
-	public @ResponseBody String addAlert(@RequestBody AlertRequestWrapper gsonAlert) {
+	public @ResponseBody String addAlert(@RequestBody AlertRequestWrapper alertWrapper) {
+		System.out.println("aa:" + alertWrapper.getUsername());
+		int userId = userRepository.getIdByUsername(alertWrapper.getUsername());
+		int groupId = ugrRepository.getGroupIdByUserIdAlias(userId, alertWrapper.getGroupname());
 		Alert newAlert = new Alert();
-		newAlert.setActionTime(new Date());
-		newAlert.setContent(gsonAlert.getContent());
-		newAlert.setImageUrl(gsonAlert.getImage_url());
-		newAlert.setAlertType(gsonAlert.getTYPE());
-		newAlert.setGroupId(-1);
-		newAlert.setUserId(-1);
+		newAlert.setAlertTime(new Date());
+		newAlert.setContent(alertWrapper.getContent());
+		newAlert.setImageUrl(alertWrapper.getImage_url());
+		newAlert.setUserId(userId);
+		newAlert.setGroupId(groupId);
+		newAlert.setSended(0);
+		newAlert.setAlertType(alertWrapper.getType());
 		alertRepository.add(newAlert);
-		return gsonAlert.getContent();
+		return alertWrapper.getContent();
 	}
 	
 	@RequestMapping(path="/object/all")

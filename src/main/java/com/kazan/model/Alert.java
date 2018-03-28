@@ -10,7 +10,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-@SuppressWarnings("serial")
 @Entity
 @Table(name = "ALERT")
 public class Alert {
@@ -22,7 +21,7 @@ public class Alert {
 	
 	@Column(name = "alert_time")
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date actionTime;
+	private Date alertTime;
 	
 	@Column(name="content")
 	private String content;
@@ -74,12 +73,12 @@ public class Alert {
 		this.alertId = alertId;
 	}
 
-	public Date getActionTime() {
-		return actionTime;
+	public Date getAlertTime() {
+		return alertTime;
 	}
 
-	public void setActionTime(Date actionTime) {
-		this.actionTime = actionTime;
+	public void setAlertTime(Date actionTime) {
+		this.alertTime = actionTime;
 	}
 
 	public String getContent() {
