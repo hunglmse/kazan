@@ -16,13 +16,16 @@ public class UserGroupRoleRepository {
 	
 	@Transactional
 	public int getGroupIdByUserIdAlias(int userId, String groupAlias) {
+		System.out.println(userId + "," + groupAlias);
 		try {
 			Query query = sessionFactory.getCurrentSession().createQuery("from UserGroupRole where userId = :userIdToSelect and groupAlias = :aliasToSelect ");
 			query.setParameter("userIdToSelect", userId);
 			query.setParameter("aliasToSelect", groupAlias);
+			query.setMaxResults(1);
 			UserGroupRole result = (UserGroupRole) query.uniqueResult();
 			return result.getGroupId();
-		} catch (Exception e) {			
+		} catch (Exception e) {		
+			e.printStackTrace();
 			return -1;
 		}
 	}

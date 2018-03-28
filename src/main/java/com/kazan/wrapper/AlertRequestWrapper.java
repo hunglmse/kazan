@@ -3,7 +3,7 @@ package com.kazan.wrapper;
 public class AlertRequestWrapper {
 	private String username;
 	private String password;
-	private String groupname;
+	private String groupName;
 	private String content;
 	private String image_url;
 	private Integer type;
@@ -22,11 +22,11 @@ public class AlertRequestWrapper {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public String getGroupname() {
-		return groupname;
+	public String getGroupName() {
+		return groupName;
 	}
-	public void setGroupname(String groupname) {
-		this.groupname = groupname;
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
 	}
 	public String getContent() {
 		return content;

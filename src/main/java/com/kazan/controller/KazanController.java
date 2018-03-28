@@ -22,7 +22,6 @@ import com.kazan.repository.UserGroupRoleRepository;
 import com.kazan.repository.UserRepository;
 import com.kazan.wrapper.AlertRequestWrapper;
 import com.kazan.wrapper.ObjectRequestWrapper;
-import com.kazan.wrapper.ObjectWrapper;
 
 @RestController    
 @RequestMapping(path="/kazan")
@@ -51,7 +50,7 @@ public class KazanController {
 			return new ResponseEntity<String>("Username not found!", HttpStatus.UNAUTHORIZED);
 		}
 		
-		int groupId = ugrRepository.getGroupIdByUserIdAlias(userId, alertWrapper.getGroupname());
+		int groupId = ugrRepository.getGroupIdByUserIdAlias(userId, alertWrapper.getGroupName());
 		if (-1 != groupId) {
 			newAlert.setGroupId(groupId);
 		} else {

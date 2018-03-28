@@ -18,3 +18,4 @@ target/
 
 # Spring
 .springBeans
+src/main/resources/application.properties
