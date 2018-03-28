@@ -68,7 +68,7 @@ public class KazanController {
 		if (null == resultAlert) {
 			return new ResponseEntity<>("Error adding object!", HttpStatus.UNAUTHORIZED);
 		}
-		return new ResponseEntity<String>("Them alert thanh cong!", HttpStatus.ACCEPTED);
+		return new ResponseEntity<String>("Alert added successfully!", HttpStatus.ACCEPTED);
 	}
 	
 	@RequestMapping(method=RequestMethod.POST, path="/object/syn")
