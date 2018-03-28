@@ -47,10 +47,20 @@ public class KazanObject {
 	
 	@Column(name="objprop_scale")
 	private Double objprop_scale;	
+	
+	@Column(name="updated_date")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date updated_date;
+
+	@Column(name="user_id")
+	private Integer userId;
+	
+	@Column(name="group_id")
+	private Integer groupId;
 
 	public KazanObject(String symbol, Integer objprop_type, Date objprop_time1, Date objprop_time2,
 			Double objprop_price1, Double objprop_price2, Integer objprop_width, Integer objprop_color,
-			Double objprop_scale) {
+			Double objprop_scale, Date updated_date, Integer userId, Integer groupId) {
 		super();
 		this.symbol = symbol;
 		this.objprop_type = objprop_type;
@@ -61,6 +71,33 @@ public class KazanObject {
 		this.objprop_width = objprop_width;
 		this.objprop_color = objprop_color;
 		this.objprop_scale = objprop_scale;
+		this.updated_date = updated_date;
+		this.userId = userId;
+		this.groupId = groupId;
+	}
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+
+	public Integer getGroupId() {
+		return groupId;
+	}
+
+	public void setGroupId(Integer groupId) {
+		this.groupId = groupId;
+	}
+
+	public Date getUpdated_date() {
+		return updated_date;
+	}
+
+	public void setUpdated_date(Date updated_date) {
+		this.updated_date = updated_date;
 	}
 
 	public Integer getObjectId() {
