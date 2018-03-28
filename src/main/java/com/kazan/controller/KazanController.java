@@ -20,7 +20,6 @@ import com.kazan.repository.AlertRepository;
 import com.kazan.repository.ObjectRepository;
 import com.kazan.repository.UserGroupRoleRepository;
 import com.kazan.repository.UserRepository;
-import com.kazan.utils.KazanStringUtils;
 import com.kazan.wrapper.AlertRequestWrapper;
 import com.kazan.wrapper.ObjectRequestWrapper;
 import com.kazan.wrapper.ObjectWrapper;
@@ -91,7 +90,7 @@ public class KazanController {
 		if (null != objects) {
 			for (ObjectWrapper ow : objects) {
 				KazanObject ko = new KazanObject(ow.getSymbol(), ow.getObjprop_type(), 
-												KazanStringUtils.formatDate(ow.getObjprop_time1()), KazanStringUtils.formatDate(ow.getObjprop_time2()),
+												new Date(Long.parseLong(ow.getObjprop_time1())), new Date(Long.parseLong(ow.getObjprop_time2())),
 												ow.getObjprop_price1(), ow.getObjprop_price2(), ow.getObjprop_width(), ow.getObjprop_color(), 
 												ow.getObjprop_scale(), new Date(), userId, groupId);
 				objectRepository.add(ko);
