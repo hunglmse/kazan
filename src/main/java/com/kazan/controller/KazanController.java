@@ -84,20 +84,38 @@ public class KazanController {
 	}
 	
 	@RequestMapping(method=RequestMethod.POST, path="/object/add")
-	public @ResponseBody List<KazanObject> addObject(@RequestBody ObjectRequestWrapper gsonWrapperObject) {
-		objectRepository.delete(gsonWrapperObject.getSymbol());
-		List<ObjectWrapper> objects = gsonWrapperObject.getObjects();
+	public @ResponseBody ResponseEntity<String> addObject(@RequestBody ObjectRequestWrapper wrapperObject) {
+		int userId = -1;
+		try {
+			userId = userRepository.getIdByUsername(wrapperObject.getUsername());
+		} catch(Exception e) {
+			return new ResponseEntity<String>("Khong tim thay username!", HttpStatus.UNAUTHORIZED);
+		}	
+		int groupId = -1;
+		try {
+			groupId = ugrRepository.getGroupIdByUserIdAlias(userId, wrapperObject.getGroupName());
+		} catch(Exception e) {
+			return new ResponseEntity<>("Khong tim thay group_id!", HttpStatus.UNAUTHORIZED);
+		}
+		try {
+			objectRepository.deleteBySymbolUserGroup(wrapperObject.getSymbol(), userId, groupId);
+		} catch(Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>("Khong the xoa object!", HttpStatus.UNAUTHORIZED);
+		}
+		List<ObjectWrapper> objects = wrapperObject.getObjects();
 		for (ObjectWrapper ow : objects) {
 			KazanObject ko = new KazanObject(ow.getSymbol(), ow.getObjprop_type(), 
 											KazanStringUtils.formatDate(ow.getObjprop_time1()), KazanStringUtils.formatDate(ow.getObjprop_time2()),
-											ow.getObjprop_price1(), ow.getObjprop_price2(), ow.getObjprop_width(), ow.getObjprop_color(), ow.getObjprop_scale());
+											ow.getObjprop_price1(), ow.getObjprop_price2(), ow.getObjprop_width(), ow.getObjprop_color(), 
+											ow.getObjprop_scale(), new Date(), userId, groupId);
 			objectRepository.add(ko);
 		}
-		return null;
+		return new ResponseEntity<String>("Cap nhat object thanh cong!", HttpStatus.ACCEPTED);
 	}
 	
 	@GetMapping(path="/object/delete")
 	public @ResponseBody int deleteObject(@RequestParam String symbol) {		
-		return objectRepository.delete(symbol);
+		return objectRepository.deleteBySymbol(symbol);
 	}
 }
