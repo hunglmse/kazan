@@ -57,6 +57,10 @@ public class KazanObject {
 	
 	@Column(name="group_id")
 	private Integer groupId;
+	
+	public KazanObject() {
+		
+	}
 
 	public KazanObject(String symbol, Integer objprop_type, Date objprop_time1, Date objprop_time2,
 			Double objprop_price1, Double objprop_price2, Integer objprop_width, Integer objprop_color,
