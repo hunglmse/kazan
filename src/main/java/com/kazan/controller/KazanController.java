@@ -123,7 +123,7 @@ public class KazanController {
 		}
 		ObjectMapper mapper = new ObjectMapper();
 		try {
-			return new ResponseEntity<String>(mapper.writeValueAsString(objectRepository.getBySymbolUserGroup(wrapperObject.getSymbol(), userId, groupId)), HttpStatus.ACCEPTED);
+			return new ResponseEntity<String>(mapper.writeValueAsString(objectRepository.getBySymbolGroup(wrapperObject.getSymbol(), userId, groupId)), HttpStatus.ACCEPTED);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 			return new ResponseEntity<String>("Error getting object!", HttpStatus.UNAUTHORIZED);

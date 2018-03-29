@@ -46,6 +46,15 @@ public class ObjectRepository {
 		return query.list();
 	}
 
+	@SuppressWarnings("unchecked")
+	@Transactional
+	public List<KazanObject> getBySymbolGroup(String symbol, Integer userId, Integer groupId) {
+		Query query = sessionFactory.getCurrentSession().createQuery("from KazanObject where symbol = :symbolToSelect and group_id = :groupIdToSelect ");
+		query.setString("symbolToSelect", symbol);
+		query.setInteger("groupIdToSelect", groupId);
+		return query.list();
+	}
+
 	@Transactional
 	public KazanObject add(KazanObject t) {
 		sessionFactory.getCurrentSession().persist(t);
