@@ -98,7 +98,7 @@ public class KazanController {
 			newAlert.setUserId(userId);
 			newAlert.setGroupId(groupId);
 			newAlert.setAlertTime(new Date());
-			newAlert.setContent(wrapperObject.getUsername() + " updated data for " + wrapperObject.getSymbol());
+			newAlert.setContent(wrapperObject.getUsername() + " updated data for " + wrapperObject.getSymbol() + " on " + wrapperObject.getPeriod());
 			newAlert.setAlertType(1);
 			newAlert.setSended(0);
 			Alert resultAlert = alertRepository.add(newAlert);

@@ -14,6 +14,13 @@ public class ObjectRequestWrapper {
 	private String accountNumber;
 	private String accountServer;
 	private List<KazanObject> objects;
+	private String period;	
+	public String getPeriod() {
+		return period;
+	}
+	public void setPeriod(String period) {
+		this.period = period;
+	}
 	public String getUsername() {
 		return username;
 	}
