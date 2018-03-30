@@ -80,7 +80,7 @@ public class KazanController {
 			return new ResponseEntity<String>("Group not found!", HttpStatus.UNAUTHORIZED);
 		}
 		try {
-			objectRepository.deleteBySymbolUserGroup(wrapperObject.getSymbol(), userId, groupId);
+			objectRepository.deleteBySymbolGroup(wrapperObject.getSymbol(), groupId);
 		} catch(Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<String>("Cannot delete object!", HttpStatus.UNAUTHORIZED);

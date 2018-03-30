@@ -36,6 +36,14 @@ public class ObjectRepository {
 				.executeUpdate();
 	}
 
+	@Transactional
+	public int deleteBySymbolGroup(String symbol, Integer groupId) {
+		String hql = "delete from KazanObject where symbol= :symbolToDelete and group_id = :groupIdToDelete";
+		return sessionFactory.getCurrentSession().createQuery(hql)
+				.setString("symbolToDelete", symbol).setInteger("groupIdToDelete", groupId)
+				.executeUpdate();
+	}
+
 	@SuppressWarnings("unchecked")
 	@Transactional
 	public List<KazanObject> getBySymbolUserGroup(String symbol, Integer userId, Integer groupId) {
