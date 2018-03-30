@@ -16,7 +16,6 @@ public class UserGroupRoleRepository {
 	
 	@Transactional
 	public int getGroupIdByUserIdAlias(int userId, String groupAlias) {
-		System.out.println(userId + "," + groupAlias);
 		try {
 			Query query = sessionFactory.getCurrentSession().createQuery("from UserGroupRole where userId = :userIdToSelect and groupAlias = :aliasToSelect ");
 			query.setParameter("userIdToSelect", userId);
