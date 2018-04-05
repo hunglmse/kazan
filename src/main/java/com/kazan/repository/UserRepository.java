@@ -19,7 +19,10 @@ public class UserRepository {
 		Query query = sessionFactory.getCurrentSession().createQuery("from KazanUser where username = :usernameToSelect ");
 		query.setParameter("usernameToSelect", username);
 		KazanUser result = (KazanUser) query.uniqueResult();
-		return result.getUserId();
+		if (null == result)
+			return -1;
+		else
+			return result.getUserId();
 	}
 	
 	@Transactional

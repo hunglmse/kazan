@@ -10,7 +10,7 @@ public class KazanStringUtils {
 		try {
 			return KAZAN_DATE_FORMAT.parse(dateString);
 		} catch (ParseException e) {
-			e.printStackTrace();
+			System.out.println("KazanStringUtils:" + e);
 			return new Date(0);
 		}		
 	}

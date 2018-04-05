@@ -22,9 +22,12 @@ public class UserGroupRoleRepository {
 			query.setParameter("aliasToSelect", groupAlias);
 			query.setMaxResults(1);
 			UserGroupRole result = (UserGroupRole) query.uniqueResult();
-			return result.getGroupId();
+			if (null == result)
+				return -1;
+			else
+				return result.getGroupId();
 		} catch (Exception e) {		
-			e.printStackTrace();
+			System.out.println("UserGroupRoleRepository.getGroupIdByUserIdAlias:" + e);
 			return -1;
 		}
 	}

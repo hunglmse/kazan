@@ -82,7 +82,7 @@ public class KazanController {
 		try {
 			objectRepository.deleteBySymbolGroup(wrapperObject.getSymbol(), groupId);
 		} catch(Exception e) {
-			e.printStackTrace();
+			System.out.println("KazanController.synObject:" + e);
 			return new ResponseEntity<String>("Cannot delete object!", HttpStatus.UNAUTHORIZED);
 		}
 		List<KazanObject> objects = wrapperObject.getObjects();
@@ -125,7 +125,7 @@ public class KazanController {
 		try {
 			return new ResponseEntity<String>(mapper.writeValueAsString(objectRepository.getBySymbolGroup(wrapperObject.getSymbol(), userId, groupId)), HttpStatus.ACCEPTED);
 		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+			System.out.println("KazanController.getObject:" + e);
 			return new ResponseEntity<String>("Error getting object!", HttpStatus.UNAUTHORIZED);
 		}
 	}
