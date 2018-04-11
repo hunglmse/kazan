@@ -16,13 +16,11 @@ public class UserRepository {
 	
 	@Transactional
 	public int getIdByUsername(String username) {
-		Query query = sessionFactory.getCurrentSession().createQuery("from KazanUser where username = :usernameToSelect ");
-		query.setParameter("usernameToSelect", username);
-		KazanUser result = (KazanUser) query.uniqueResult();
+		KazanUser result = (KazanUser) geByUsername(username);
 		if (null == result)
 			return -1;
 		else
-			return result.getUserId();
+			return result.getTelegramId();
 	}
 	
 	@Transactional

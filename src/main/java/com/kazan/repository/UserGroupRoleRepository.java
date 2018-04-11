@@ -15,19 +15,20 @@ public class UserGroupRoleRepository {
 	private SessionFactory sessionFactory;
 	
 	@Transactional
-	public int getGroupIdByUserIdAlias(int userId, String groupAlias) {
+	public int getGroupIdByTelegramIdAlias(int userId, String groupAlias) {
 		try {
-			Query query = sessionFactory.getCurrentSession().createQuery("from UserGroupRole where userId = :userIdToSelect and groupAlias = :aliasToSelect ");
-			query.setParameter("userIdToSelect", userId);
+			Query query = sessionFactory.getCurrentSession().createQuery("from UserGroupRole where telegramId = :telegramIdToSelect and groupAlias = :aliasToSelect ");
+			query.setParameter("telegramIdToSelect", userId);
 			query.setParameter("aliasToSelect", groupAlias);
 			query.setMaxResults(1);
+			System.out.println(userId + ":" + groupAlias);
 			UserGroupRole result = (UserGroupRole) query.uniqueResult();
 			if (null == result)
 				return -1;
 			else
 				return result.getGroupId();
 		} catch (Exception e) {		
-			System.out.println("UserGroupRoleRepository.getGroupIdByUserIdAlias:" + e);
+			System.out.println("UserGroupRoleRepository.getGroupIdByTelegramIdAlias:" + e);
 			return -1;
 		}
 	}

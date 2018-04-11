@@ -1,11 +1,14 @@
 package com.kazan.model;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "USER_GROUP_ROLE")
@@ -17,8 +20,8 @@ public class UserGroupRole implements Serializable {
 	private static final long serialVersionUID = -6698307116255363423L;
 
 	@Id
-	@Column(name="user_id")
-	private Integer userId;	
+	@Column(name="telegram_id")
+	private Integer telegramId;	
 	
 	@Id
 	@Column(name="group_id")
@@ -30,13 +33,20 @@ public class UserGroupRole implements Serializable {
 	
 	@Column(name="group_alias")
 	private String groupAlias;
+	
+	@Column(name="symbol_master")
+	private String symbolMaster;
+	
+	@Column(name = "expiry_date")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date expiryDate;
 
-	public Integer getUserId() {
-		return userId;
+	public Integer getTelegramId() {
+		return telegramId;
 	}
 
-	public void setUserId(Integer userId) {
-		this.userId = userId;
+	public void setTelegramId(Integer telegramId) {
+		this.telegramId = telegramId;
 	}
 
 	public Integer getGroupId() {
@@ -61,6 +71,22 @@ public class UserGroupRole implements Serializable {
 
 	public void setGroupAlias(String groupAlias) {
 		this.groupAlias = groupAlias;
+	}
+
+	public String getSymbolMaster() {
+		return symbolMaster;
+	}
+
+	public void setSymbolMaster(String symbolMaster) {
+		this.symbolMaster = symbolMaster;
+	}
+
+	public Date getExpiryDate() {
+		return expiryDate;
+	}
+
+	public void setExpiryDate(Date expiryDate) {
+		this.expiryDate = expiryDate;
 	}
 	
 }

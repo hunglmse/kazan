@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kazan.model.Alert;
+import com.kazan.model.Message;
 import com.kazan.model.KazanObject;
-import com.kazan.repository.AlertRepository;
+import com.kazan.repository.MessageRepository;
 import com.kazan.repository.ObjectRepository;
 import com.kazan.repository.UserGroupRoleRepository;
 import com.kazan.repository.UserRepository;
@@ -31,7 +31,7 @@ public class KazanController {
 	private ObjectRepository objectRepository;
 	
 	@Autowired
-	private AlertRepository alertRepository;
+	private MessageRepository alertRepository;
 	
 	@Autowired
 	private UserRepository userRepository;
@@ -41,28 +41,28 @@ public class KazanController {
 	
 	@RequestMapping(method=RequestMethod.POST, path="/alert/add")
 	public @ResponseBody ResponseEntity<String> addAlert(@RequestBody AlertRequestWrapper alertWrapper) {
-		Alert newAlert = new Alert();
+		Message newAlert = new Message();
 		
-		int userId = userRepository.getIdByUsername(alertWrapper.getUsername());
-		if (-1 != userId) {
-			newAlert.setUserId(userId);
+		int telegramId = userRepository.getIdByUsername(alertWrapper.getUsername());
+		if (-1 != telegramId) {
+			newAlert.setTelegramId(telegramId);
 		} else {
 			return new ResponseEntity<String>("Username not found!", HttpStatus.UNAUTHORIZED);
 		}
 		
-		int groupId = ugrRepository.getGroupIdByUserIdAlias(userId, alertWrapper.getGroupName());
+		int groupId = ugrRepository.getGroupIdByTelegramIdAlias(telegramId, alertWrapper.getGroupName());
 		if (-1 != groupId) {
 			newAlert.setGroupId(groupId);
 		} else {
 			return new ResponseEntity<String>("Group not found!", HttpStatus.UNAUTHORIZED);
 		}
 		
-		newAlert.setAlertTime(new Date());
+		newAlert.setMessageTime(new Date());
 		newAlert.setContent(alertWrapper.getContent());
 		newAlert.setImageUrl(alertWrapper.getImage_url());
 		newAlert.setSended(0);
-		newAlert.setAlertType(alertWrapper.getType());
-		Alert resultAlert = alertRepository.add(newAlert);
+		newAlert.setMessageType(alertWrapper.getType());
+		Message resultAlert = alertRepository.add(newAlert);
 		if (null == resultAlert) {
 			return new ResponseEntity<>("Error adding object!", HttpStatus.UNAUTHORIZED);
 		}
@@ -75,7 +75,7 @@ public class KazanController {
 		if (-1 == userId) {
 			return new ResponseEntity<String>("Username not found!", HttpStatus.UNAUTHORIZED);
 		}		
-		int groupId = ugrRepository.getGroupIdByUserIdAlias(userId, wrapperObject.getGroupName());
+		int groupId = ugrRepository.getGroupIdByTelegramIdAlias(userId, wrapperObject.getGroupName());
 		if (-1 == groupId) {
 			return new ResponseEntity<String>("Group not found!", HttpStatus.UNAUTHORIZED);
 		}
@@ -89,19 +89,19 @@ public class KazanController {
 		if (null != objects) {
 			for (KazanObject ko : objects) {
 				ko.setSymbol(wrapperObject.getSymbol());
-				ko.setUserId(userId);
+				ko.setTelegramId(userId);
 				ko.setGroupId(groupId);
 				ko.setUpdated_date(new Date());
 				objectRepository.add(ko);
 			}
-			Alert newAlert = new Alert();
-			newAlert.setUserId(userId);
+			Message newAlert = new Message();
+			newAlert.setTelegramId(userId);
 			newAlert.setGroupId(groupId);
-			newAlert.setAlertTime(new Date());
+			newAlert.setMessageTime(new Date());
 			newAlert.setContent(wrapperObject.getUsername() + " updated data for " + wrapperObject.getSymbol() + " on " + wrapperObject.getPeriod());
-			newAlert.setAlertType(1);
+			newAlert.setMessageType(1);
 			newAlert.setSended(0);
-			Alert resultAlert = alertRepository.add(newAlert);
+			Message resultAlert = alertRepository.add(newAlert);
 			if (null == resultAlert) {
 				return new ResponseEntity<String>("Error adding new alert after synchronizing object list!", HttpStatus.UNAUTHORIZED);
 			}
@@ -117,7 +117,7 @@ public class KazanController {
 		if (-1 == userId) {
 			return new ResponseEntity<String>("Username not found!", HttpStatus.UNAUTHORIZED);
 		}		
-		int groupId = ugrRepository.getGroupIdByUserIdAlias(userId, wrapperObject.getGroupName());
+		int groupId = ugrRepository.getGroupIdByTelegramIdAlias(userId, wrapperObject.getGroupName());
 		if (-1 == groupId) {
 			return new ResponseEntity<String>("Group not found!", HttpStatus.UNAUTHORIZED);
 		}

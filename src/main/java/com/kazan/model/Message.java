@@ -11,17 +11,20 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "ALERT")
-public class Alert {
+@Table(name = "MESSAGE")
+public class Message {
 	
 	@Id
 	@GeneratedValue
-	@Column(name="alert_id")
-	private Integer alertId;	
+	@Column(name="message_id")
+	private Integer messageId;	
 	
-	@Column(name = "alert_time")
+	@Column(name = "message_time")
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date alertTime;
+	private Date messageTime;
+	
+	@Column(name="note")
+	private String note;
 	
 	@Column(name="content")
 	private String content;
@@ -29,8 +32,8 @@ public class Alert {
 	@Column(name="image_url")
 	private String imageUrl;
 	
-	@Column(name="user_id")
-	private Integer userId;
+	@Column(name="telegram_id")
+	private Integer telegramId;
 	
 	@Column(name="group_id")
 	private Integer groupId;
@@ -38,47 +41,31 @@ public class Alert {
 	@Column(name="sended")
 	private Integer sended;
 	
-	@Column(name="alert_type")
-	private Integer alertType;
+	@Column(name="message_type")
+	private Integer messageType;
 
-	public String getImageUrl() {
-		return imageUrl;
+	public Integer getMessageId() {
+		return messageId;
 	}
 
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
+	public void setMessageId(Integer messageId) {
+		this.messageId = messageId;
 	}
 
-	public Integer getSended() {
-		return sended;
+	public Date getMessageTime() {
+		return messageTime;
 	}
 
-	public void setSended(Integer sended) {
-		this.sended = sended;
+	public void setMessageTime(Date messageTime) {
+		this.messageTime = messageTime;
 	}
 
-	public Integer getAlertType() {
-		return alertType;
+	public String getNote() {
+		return note;
 	}
 
-	public void setAlertType(Integer alertType) {
-		this.alertType = alertType;
-	}
-
-	public Integer getAlertId() {
-		return alertId;
-	}
-
-	public void setAlertId(Integer alertId) {
-		this.alertId = alertId;
-	}
-
-	public Date getAlertTime() {
-		return alertTime;
-	}
-
-	public void setAlertTime(Date actionTime) {
-		this.alertTime = actionTime;
+	public void setNote(String note) {
+		this.note = note;
 	}
 
 	public String getContent() {
@@ -89,12 +76,20 @@ public class Alert {
 		this.content = content;
 	}
 
-	public Integer getUserId() {
-		return userId;
+	public String getImageUrl() {
+		return imageUrl;
 	}
 
-	public void setUserId(Integer userId) {
-		this.userId = userId;
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+	public Integer getTelegramId() {
+		return telegramId;
+	}
+
+	public void setTelegramId(Integer telegramId) {
+		this.telegramId = telegramId;
 	}
 
 	public Integer getGroupId() {
@@ -103,7 +98,22 @@ public class Alert {
 
 	public void setGroupId(Integer groupId) {
 		this.groupId = groupId;
-	}	
-	
+	}
+
+	public Integer getSended() {
+		return sended;
+	}
+
+	public void setSended(Integer sended) {
+		this.sended = sended;
+	}
+
+	public Integer getMessageType() {
+		return messageType;
+	}
+
+	public void setMessageType(Integer messageType) {
+		this.messageType = messageType;
+	}
 	
 }

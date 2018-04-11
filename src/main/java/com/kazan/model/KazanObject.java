@@ -108,22 +108,22 @@ public class KazanObject {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updated_date;
 
-	@Column(name = "user_id")
-	private Integer userId;
+	@Column(name = "telegram_id")
+	private Integer telegramId;
 
 	@Column(name = "group_id")
 	private Integer groupId;
 
 	public KazanObject() {
 
+	}	
+
+	public Integer getTelegramId() {
+		return telegramId;
 	}
 
-	public Integer getUserId() {
-		return userId;
-	}
-
-	public void setUserId(Integer userId) {
-		this.userId = userId;
+	public void setTelegramId(Integer telegramId) {
+		this.telegramId = telegramId;
 	}
 
 	public Integer getGroupId() {
