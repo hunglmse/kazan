@@ -17,6 +17,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kazan.model.Message;
 import com.kazan.model.KazanObject;
 import com.kazan.repository.MessageRepository;
+import com.kazan.repository.ObjectAlertRepository;
+import com.kazan.repository.ObjectMasterRepository;
 import com.kazan.repository.ObjectRepository;
 import com.kazan.repository.UserGroupRoleRepository;
 import com.kazan.repository.UserRepository;
@@ -31,7 +33,13 @@ public class KazanController {
 	private ObjectRepository objectRepository;
 	
 	@Autowired
-	private MessageRepository alertRepository;
+	private ObjectMasterRepository objectMasterRepository;
+	
+	@Autowired
+	private ObjectAlertRepository objectAlertRepository;
+	
+	@Autowired
+	private MessageRepository messageRepository;
 	
 	@Autowired
 	private UserRepository userRepository;
@@ -62,7 +70,7 @@ public class KazanController {
 		newAlert.setImageUrl(alertWrapper.getImage_url());
 		newAlert.setSended(0);
 		newAlert.setMessageType(alertWrapper.getType());
-		Message resultAlert = alertRepository.add(newAlert);
+		Message resultAlert = messageRepository.add(newAlert);
 		if (null == resultAlert) {
 			return new ResponseEntity<>("Error adding object!", HttpStatus.UNAUTHORIZED);
 		}
@@ -101,7 +109,7 @@ public class KazanController {
 			newAlert.setContent(wrapperObject.getUsername() + " updated data for " + wrapperObject.getSymbol() + " on " + wrapperObject.getPeriod());
 			newAlert.setMessageType(1);
 			newAlert.setSended(0);
-			Message resultAlert = alertRepository.add(newAlert);
+			Message resultAlert = messageRepository.add(newAlert);
 			if (null == resultAlert) {
 				return new ResponseEntity<String>("Error adding new alert after synchronizing object list!", HttpStatus.UNAUTHORIZED);
 			}
@@ -117,16 +125,32 @@ public class KazanController {
 		if (-1 == userId) {
 			return new ResponseEntity<String>("Username not found!", HttpStatus.UNAUTHORIZED);
 		}		
-		int groupId = ugrRepository.getGroupIdByTelegramIdAlias(userId, wrapperObject.getGroupName());
+		int groupId = ugrRepository.getGroupIdByTelegramIdAlias(userId, wrapperObject.getGroupAliases().get(0));
 		if (-1 == groupId) {
 			return new ResponseEntity<String>("Group not found!", HttpStatus.UNAUTHORIZED);
 		}
 		ObjectMapper mapper = new ObjectMapper();
+		int mode = wrapperObject.getMode();
 		try {
-			return new ResponseEntity<String>(mapper.writeValueAsString(objectRepository.getBySymbolGroup(wrapperObject.getSymbol(), userId, groupId)), HttpStatus.ACCEPTED);
+			switch (mode) {
+				case 2: 
+					return new ResponseEntity<String>(mapper.writeValueAsString(objectMasterRepository.getBySymbolGroup(wrapperObject.getSymbol(), userId, groupId)), HttpStatus.ACCEPTED);
+				case 3: 
+					return new ResponseEntity<String>(mapper.writeValueAsString(objectRepository.getBySymbolGroup(wrapperObject.getSymbol(), userId, groupId)), HttpStatus.ACCEPTED);
+				case 4: case 5: 
+					return new ResponseEntity<String>(mapper.writeValueAsString(objectAlertRepository.getBySymbolGroup(wrapperObject.getSymbol(), userId, groupId)), HttpStatus.ACCEPTED);
+				default:
+					return new ResponseEntity<String>("Undefined mode!", HttpStatus.UNAUTHORIZED);
+			}
+			
 		} catch (JsonProcessingException e) {
 			System.out.println("KazanController.getObject:" + e);
 			return new ResponseEntity<String>("Error getting object!", HttpStatus.UNAUTHORIZED);
-		}
+		}		
+	}
+	
+	@RequestMapping(method=RequestMethod.POST, path="/user/get")
+	public @ResponseBody ResponseEntity<String> getUser(@RequestBody ObjectRequestWrapper wrapperObject) {
+		return null;
 	}
 }

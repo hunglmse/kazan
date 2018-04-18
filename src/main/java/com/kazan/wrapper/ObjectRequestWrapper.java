@@ -15,12 +15,12 @@ public class ObjectRequestWrapper {
 	private String accountServer;
 	private List<KazanObject> objects;
 	private String period;	
-	private List<String> groupNames;	
-	public List<String> getGroupNames() {
-		return groupNames;
+	private List<String> groupAliases;	
+	public List<String> getGroupAliases() {
+		return groupAliases;
 	}
-	public void setGroupNames(List<String> groupNames) {
-		this.groupNames = groupNames;
+	public void setGroupAliases(List<String> groupNames) {
+		this.groupAliases = groupNames;
 	}
 	public String getPeriod() {
 		return period;
