@@ -9,7 +9,7 @@ public class ObjectRequestWrapper {
 	private String password;
 	private String groupName;
 	private String symbol;
-	private String mode;
+	private Integer mode;
 	private String accountName;
 	private String accountNumber;
 	private String accountServer;
@@ -52,10 +52,10 @@ public class ObjectRequestWrapper {
 	public void setSymbol(String symbol) {
 		this.symbol = symbol;
 	}
-	public String getMode() {
+	public Integer getMode() {
 		return mode;
 	}
-	public void setMode(String mode) {
+	public void setMode(Integer mode) {
 		this.mode = mode;
 	}
 	public String getAccountName() {
