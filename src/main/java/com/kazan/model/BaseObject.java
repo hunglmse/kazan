@@ -381,4 +381,36 @@ public class BaseObject {
 		this.objprop_levelwidth = objprop_levelwidth;
 	}
 
+	protected void copyProperties(BaseObject bo) {
+		this.setGroupId(bo.getGroupId());
+		this.setObjectId(bo.getObjectId());
+		this.setObjprop_angle(bo.getObjprop_angle());
+		this.setObjprop_back(bo.getObjprop_back());
+		this.setObjprop_color(bo.getObjprop_color());
+		this.setObjprop_corner(bo.getObjprop_corner());
+		this.setObjprop_deviation(bo.getObjprop_deviation());
+		this.setObjprop_direction(bo.getObjprop_direction());
+		this.setObjprop_ellipse(bo.getObjprop_ellipse());
+		this.setObjprop_fibolevels(bo.getObjprop_fibolevels());
+		this.setObjprop_font(bo.getObjprop_font());
+		this.setObjprop_fontsize(bo.getObjprop_fontsize());
+		this.setObjprop_levelcolor(bo.getObjprop_levelcolor());
+		this.setObjprop_levelstyle(bo.getObjprop_levelstyle());
+		this.setObjprop_levelwidth(bo.getObjprop_levelwidth());
+		this.setObjprop_price1(bo.getObjprop_price1());
+		this.setObjprop_price2(bo.getObjprop_price2());
+		this.setObjprop_price3(bo.getObjprop_price3());
+		this.setObjprop_ray_right(bo.getObjprop_ray_right());
+		this.setObjprop_scale(bo.getObjprop_scale());
+		this.setObjprop_style(bo.getObjprop_style());
+		this.setObjprop_text(bo.getObjprop_text());
+		this.setObjprop_time1(bo.getObjprop_time1());
+		this.setObjprop_time2(bo.getObjprop_time2());
+		this.setObjprop_time3(bo.getObjprop_time3());
+		this.setObjprop_type(bo.getObjprop_type());
+		this.setObjprop_width(bo.getObjprop_width());
+		this.setSymbol(bo.getSymbol());
+		this.setUpdated_date(bo.getUpdated_date());
+		this.setUserId(bo.getUserId());		
+	}
 }

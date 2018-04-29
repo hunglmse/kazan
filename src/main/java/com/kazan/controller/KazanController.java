@@ -29,6 +29,9 @@ import com.kazan.repository.UserRepository;
 import com.kazan.wrapper.AlertRequestWrapper;
 import com.kazan.wrapper.ObjectRequestWrapper;
 
+import ch.qos.logback.core.joran.conditional.ElseAction;
+import ch.qos.logback.core.net.SyslogOutputStream;
+
 @RestController    
 @RequestMapping(path="/kazan")
 public class KazanController {
@@ -87,17 +90,13 @@ public class KazanController {
 			return new ResponseEntity<String>("Username not found!", HttpStatus.UNAUTHORIZED);
 		}
 		
-		List<String> groupAliases = wrapperObject.getGroupNames();
+		List<String> groupAliases = wrapperObject.getGroupAliases();
 		List<Integer> groupIds = new ArrayList<Integer>();
 		int groupId;
-		if (4 == wrapperObject.getMode() || 5 == wrapperObject.getMode()) {
-			for(String groupAliase:groupAliases) {
-				groupId = synObject(groupAliase, userId, wrapperObject.getSymbol(), wrapperObject.getMode(), wrapperObject.getObjects());
-				if(1!=groupId) groupIds.add(groupId);
-			}
-		} else {
-			groupId = synObject(groupAliases.get(0), userId, wrapperObject.getSymbol(), wrapperObject.getMode(), wrapperObject.getObjects());
-			if(-1!=groupId) groupIds.add(groupId);
+		//Linh Dao update here
+		for(String groupAliase:groupAliases) {
+			groupId = synObject(groupAliase, userId, wrapperObject.getSymbol(), wrapperObject.getMode(), wrapperObject.getObjects());
+			if(1!=groupId) groupIds.add(groupId);
 		}
 		if(!wrapperObject.getObjects().isEmpty()  && !groupIds.isEmpty()) {
 			int TelegramBotType;
@@ -137,11 +136,11 @@ public class KazanController {
 					ko.setGroupId(groupId);
 					ko.setUpdated_date(new Date());
 					if(mode==3) {
-						objectNormalRepository.add((ObjectNormal) ko);	
+						objectNormalRepository.add(new ObjectNormal(ko));	
 					} else if(mode==2) {
-						objectMasterRepository.add((ObjectMaster) ko);
+						objectMasterRepository.add(new ObjectMaster(ko));
 					} else if(mode==4 || mode==5) {
-						objectAlertRepository.add((ObjectAlert) ko);
+						objectAlertRepository.add(new ObjectAlert(ko));
 					}
 				}
 			}
@@ -230,7 +229,7 @@ public class KazanController {
 	@RequestMapping(method=RequestMethod.POST, path="/object/get")
 	public @ResponseBody ResponseEntity<String> getObject(@RequestBody ObjectRequestWrapper wrapperObject) {
 		int userId = userRepository.getIdByUsername(wrapperObject.getUsername());
-		List<String> groupAliases = wrapperObject.getGroupNames();
+		List<String> groupAliases = wrapperObject.getGroupAliases();
 		
 		if (-1 == userId) {
 			return new ResponseEntity<String>("Username not found!", HttpStatus.UNAUTHORIZED);
@@ -241,20 +240,33 @@ public class KazanController {
 			return new ResponseEntity<String>("Group not found!", HttpStatus.UNAUTHORIZED);
 		}
 		int roleId = ugrRepository.getGroupRoleByUserId(userId, groupId, wrapperObject.getSymbol()); 
+		
 		if(checkGetPermissionByRoleIdAndMode(roleId, wrapperObject.getMode())) {
 			ObjectMapper mapper = new ObjectMapper();
 			try {
+				//Linh Dao update here
 				int getFromUserId=-1;
-				if(! "".equalsIgnoreCase(wrapperObject.getGetFromUser())) {
+				if(! "".equalsIgnoreCase(wrapperObject.getGetFromUser()) && wrapperObject.getMode()==3) {
 					getFromUserId = userRepository.getIdByUsername(wrapperObject.getGetFromUser());
 				}
-//				if(-1 == getFromUserId) {
-//					getFromUserId = objectNormalRepository.getLastUserId(wrapperObject.getSymbol(), groupId);
-//				}
-				return new ResponseEntity<String>(mapper.writeValueAsString(objectNormalRepository.getBySymbolGroup(wrapperObject.getSymbol(), getFromUserId, groupId)), HttpStatus.ACCEPTED);
+				if(-1 == getFromUserId) {
+					String[][] userUpdate = objectNormalRepository.getUserIdAndUpdateTime(wrapperObject.getSymbol(), groupId);
+					getFromUserId = userRepository.getIdByUsername(userUpdate[0][0]);
+				}
+				
+				if(wrapperObject.getMode()==3) {
+					return new ResponseEntity<String>(mapper.writeValueAsString(objectNormalRepository.getBySymbolGroup(wrapperObject.getSymbol(), getFromUserId, groupId)), HttpStatus.ACCEPTED);
+				} else if(wrapperObject.getMode()==2) {
+					return new ResponseEntity<String>(mapper.writeValueAsString(objectMasterRepository.getBySymbolGroup(wrapperObject.getSymbol(), getFromUserId, groupId)), HttpStatus.ACCEPTED);
+				} else if(wrapperObject.getMode()==4 || wrapperObject.getMode()==5) {
+					return new ResponseEntity<String>(mapper.writeValueAsString(objectAlertRepository.getBySymbolGroup(wrapperObject.getSymbol(), getFromUserId, groupId)), HttpStatus.ACCEPTED);
+				} else {
+					return new ResponseEntity<String>("Invalid mode!", HttpStatus.UNAUTHORIZED);
+				}
+				//End update
 			} catch (JsonProcessingException e) {
 				System.out.println("KazanController.getObject:" + e);
-				return new ResponseEntity<String>("Error getting object!", HttpStatus.UNAUTHORIZED);
+				return new ResponseEntity<String>("Error parsing object!", HttpStatus.UNAUTHORIZED);
 			}
 		} else {
 			return new ResponseEntity<String>("Error getting object!", HttpStatus.UNAUTHORIZED);
@@ -268,7 +280,7 @@ public class KazanController {
 		int configForMaxReturnUser = 10;
 		//===================================
 		int userId = userRepository.getIdByUsername(wrapperObject.getUsername());
-		List<String> groupAliases = wrapperObject.getGroupNames();
+		List<String> groupAliases = wrapperObject.getGroupAliases();
 		if (-1 == userId) {
 			return new ResponseEntity<String>("Username not found!", HttpStatus.UNAUTHORIZED);
 		}
@@ -334,7 +346,7 @@ public class KazanController {
 		return false;
 	} 
 	boolean checkGetPermissionByRoleIdAndMode(int roleId, int mode) {
-		if(mode>1 && roleId>=mode) return true;
+		if (mode > 1 && roleId <= mode) return true;
 		return false;
 	}
 	boolean checkSendMessagePermissionByRoleIdAndMode(int roleId, int mode) {

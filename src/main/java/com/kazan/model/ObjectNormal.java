@@ -5,4 +5,9 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "OBJECT")
-public class ObjectNormal extends BaseObject {}
+public class ObjectNormal extends BaseObject {
+	public ObjectNormal() {}
+	public ObjectNormal(BaseObject bo) {
+		copyProperties(bo);
+	}
+}

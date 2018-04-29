@@ -90,10 +90,10 @@ public class ObjectRequestWrapper {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public List<String> getGroupNames() {
+	public List<String> getGroupAliases() {
 		return groupAliases;
 	}
-	public void setGroupNames(List<String> groupAliases) {
+	public void setGroupAliases(List<String> groupAliases) {
 		this.groupAliases = groupAliases;
 	}
 	public String getSymbol() {

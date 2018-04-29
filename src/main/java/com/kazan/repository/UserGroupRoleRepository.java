@@ -50,9 +50,11 @@ public class UserGroupRoleRepository {
 		else {
 			if(result.getRoleId()== 1 || result.getRoleId()== 2) return 2;
 			if(result.getRoleId()== 3) {
-				String[] listSymbolMasters = result.getSymbolMaster().split(",");
-				for(String symbolMaster: listSymbolMasters) {
-					if(symbol.equalsIgnoreCase(symbolMaster)) return 2;
+				if (null != result.getSymbolMaster()) {
+					String[] listSymbolMasters = result.getSymbolMaster().split(",");
+					for(String symbolMaster: listSymbolMasters) {
+						if(symbol.equalsIgnoreCase(symbolMaster)) return 2;
+					}
 				}
 				return 3;
 			}
@@ -87,7 +89,7 @@ public class UserGroupRoleRepository {
 	@Transactional
 	public List<Integer> getUserIdByGroupIdAndMode(int groupId, int mode) {
 		try {
-			Query query = sessionFactory.getCurrentSession().createQuery("from UserGroupRole groupId = :groupIdToSelect and role <= :modeToSelect ");
+			Query query = sessionFactory.getCurrentSession().createQuery("from UserGroupRole where groupId = :groupIdToSelect and roleId <= :modeToSelect ");
 			query.setParameter("modeToSelect", mode);
 			query.setParameter("groupIdToSelect", groupId);
 //			query.setMaxResults(1);
