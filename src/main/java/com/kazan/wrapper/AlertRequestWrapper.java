@@ -1,15 +1,20 @@
 package com.kazan.wrapper;
 
+import java.util.List;
+
+
 public class AlertRequestWrapper {
 	private String username;
 	private String password;
-	private String groupName;
+	private List<String> groupAliases;
 	private String content;
-	private String image_url;
-	private Integer type;
+	private String image;
+	private String note;
+	private int mode;
 	private String accountName;
 	private String accountNumber;
 	private String accountServer;
+	
 	public String getUsername() {
 		return username;
 	}
@@ -22,11 +27,11 @@ public class AlertRequestWrapper {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public String getGroupName() {
-		return groupName;
+	public List<String> getGroupAliases() {
+		return groupAliases;
 	}
-	public void setGroupName(String groupName) {
-		this.groupName = groupName;
+	public void setGroupAliases(List<String> groupAliases) {
+		this.groupAliases = groupAliases;
 	}
 	public String getContent() {
 		return content;
@@ -34,17 +39,23 @@ public class AlertRequestWrapper {
 	public void setContent(String content) {
 		this.content = content;
 	}
-	public String getImage_url() {
-		return image_url;
+	public String getImage() {
+		return image;
 	}
-	public void setImage_url(String image_url) {
-		this.image_url = image_url;
+	public void setImage(String image) {
+		this.image = image;
 	}
-	public Integer getType() {
-		return type;
+	public String getNote() {
+		return note;
 	}
-	public void setType(Integer tYPE) {
-		type = tYPE;
+	public void setNote(String note) {
+		this.note = note;
+	}
+	public int getMode() {
+		return mode;
+	}
+	public void setMode(int mode) {
+		this.mode = mode;
 	}
 	public String getAccountName() {
 		return accountName;
@@ -64,4 +75,5 @@ public class AlertRequestWrapper {
 	public void setAccountServer(String accountServer) {
 		this.accountServer = accountServer;
 	}
+	
 }

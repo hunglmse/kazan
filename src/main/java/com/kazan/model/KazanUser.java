@@ -12,8 +12,11 @@ public class KazanUser {
 	
 	@Id
 	@GeneratedValue
-	@Column(name="telegram_id")
-	private Integer telegramId;	
+	@Column(name="user_id")
+	private Integer userId;	
+	
+	@Column(name="username")
+	private String username;
 	
 	@Column(name="password")
 	private String password;
@@ -36,15 +39,23 @@ public class KazanUser {
 	@Column(name="ref_id")
 	private String refId;
 
-	@Column(name="username")
-	private String username;
+	@Column(name="telegram_Id")
+	private Integer TelegramId;
 
 	public Integer getTelegramId() {
-		return telegramId;
+		return TelegramId;
 	}
 
 	public void setTelegramId(Integer telegramId) {
-		this.telegramId = telegramId;
+		TelegramId = telegramId;
+	}
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
 	}
 
 	public String getPassword() {

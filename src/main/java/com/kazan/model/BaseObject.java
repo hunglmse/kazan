@@ -3,10 +3,9 @@ package com.kazan.model;
 import java.util.Date;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -14,10 +13,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @SuppressWarnings("deprecation")
-@Entity
-@Table(name = "OBJECT")
-public class KazanObject {
-
+@MappedSuperclass
+public class BaseObject {
 	@Id
 	@GeneratedValue
 	@Column(name = "object_id")
@@ -108,22 +105,22 @@ public class KazanObject {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updated_date;
 
-	@Column(name = "telegram_id")
-	private Integer telegramId;
+	@Column(name = "user_id")
+	private Integer userId;
 
 	@Column(name = "group_id")
 	private Integer groupId;
 
-	public KazanObject() {
+	public BaseObject() {
 
 	}	
 
-	public Integer getTelegramId() {
-		return telegramId;
+	public Integer getUserId() {
+		return userId;
 	}
 
-	public void setTelegramId(Integer telegramId) {
-		this.telegramId = telegramId;
+	public void setUserId(Integer userId) {
+		this.userId = userId;
 	}
 
 	public Integer getGroupId() {

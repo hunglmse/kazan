@@ -1,5 +1,6 @@
 package com.kazan.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -14,12 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kazan.model.BaseObject;
+import com.kazan.model.KazanGroup;
 import com.kazan.model.Message;
-import com.kazan.model.KazanObject;
+import com.kazan.model.ObjectAlert;
+import com.kazan.model.ObjectMaster;
+import com.kazan.model.ObjectNormal;
+import com.kazan.repository.AbstractObjectRepository;
+import com.kazan.repository.GroupRepository;
 import com.kazan.repository.MessageRepository;
-import com.kazan.repository.ObjectAlertRepository;
-import com.kazan.repository.ObjectMasterRepository;
-import com.kazan.repository.ObjectRepository;
 import com.kazan.repository.UserGroupRoleRepository;
 import com.kazan.repository.UserRepository;
 import com.kazan.wrapper.AlertRequestWrapper;
@@ -30,13 +34,13 @@ import com.kazan.wrapper.ObjectRequestWrapper;
 public class KazanController {
 	
 	@Autowired
-	private ObjectRepository objectRepository;
+	private AbstractObjectRepository<ObjectNormal> objectNormalRepository;
 	
 	@Autowired
-	private ObjectMasterRepository objectMasterRepository;
+	private AbstractObjectRepository<ObjectMaster>  objectMasterRepository;
 	
 	@Autowired
-	private ObjectAlertRepository objectAlertRepository;
+	private AbstractObjectRepository<ObjectAlert>  objectAlertRepository;	
 	
 	@Autowired
 	private MessageRepository messageRepository;
@@ -47,110 +51,298 @@ public class KazanController {
 	@Autowired
 	private UserGroupRoleRepository ugrRepository;
 	
-	@RequestMapping(method=RequestMethod.POST, path="/alert/add")
+	@Autowired
+	private GroupRepository groupRepository;
+	
+	@RequestMapping(method=RequestMethod.POST, path="/message/add")
 	public @ResponseBody ResponseEntity<String> addAlert(@RequestBody AlertRequestWrapper alertWrapper) {
-		Message newAlert = new Message();
-		
-		int telegramId = userRepository.getIdByUsername(alertWrapper.getUsername());
-		if (-1 != telegramId) {
-			newAlert.setTelegramId(telegramId);
-		} else {
+		int userId = userRepository.getIdByUsername(alertWrapper.getUsername());
+		if (-1 == userId) {
 			return new ResponseEntity<String>("Username not found!", HttpStatus.UNAUTHORIZED);
 		}
 		
-		int groupId = ugrRepository.getGroupIdByTelegramIdAlias(telegramId, alertWrapper.getGroupName());
-		if (-1 != groupId) {
-			newAlert.setGroupId(groupId);
-		} else {
-			return new ResponseEntity<String>("Group not found!", HttpStatus.UNAUTHORIZED);
+		List<String> groupAliases = alertWrapper.getGroupAliases();
+		List<Integer> groupIds = new ArrayList<Integer>();
+		int groupId;
+		for(String groupAliase:groupAliases) {
+			groupId = checkMessagePermission(groupAliase, userId) ;
+			if(-1!=groupId) groupIds.add(groupId);
 		}
-		
-		newAlert.setMessageTime(new Date());
-		newAlert.setContent(alertWrapper.getContent());
-		newAlert.setImageUrl(alertWrapper.getImage_url());
-		newAlert.setSended(0);
-		newAlert.setMessageType(alertWrapper.getType());
-		Message resultAlert = messageRepository.add(newAlert);
-		if (null == resultAlert) {
-			return new ResponseEntity<>("Error adding object!", HttpStatus.UNAUTHORIZED);
-		}
+		int TelegramBotType=2;
+		sendMessage(groupIds, alertWrapper.getMode(), TelegramBotType, alertWrapper.getContent(), alertWrapper.getNote(), alertWrapper.getImage());
 		return new ResponseEntity<String>("Alert added successfully!", HttpStatus.ACCEPTED);
 	}
 	
+	private int checkMessagePermission(String groupAliase,int userId) {
+		int groupId = ugrRepository.getGroupIdByGroupAlias(userId, groupAliase);
+		if (-1 == groupId) return -1;
+		int roleId = ugrRepository.getGroupRoleByUserId(userId, groupId); 
+		if(checkSendMessagePermissionByRoleIdAndMode(roleId, 0)) return groupId;
+		return -1;
+	}
 	@RequestMapping(method=RequestMethod.POST, path="/object/syn")
 	public @ResponseBody ResponseEntity<String> synObject(@RequestBody ObjectRequestWrapper wrapperObject) {
 		int userId = userRepository.getIdByUsername(wrapperObject.getUsername());
 		if (-1 == userId) {
 			return new ResponseEntity<String>("Username not found!", HttpStatus.UNAUTHORIZED);
-		}		
-		int groupId = ugrRepository.getGroupIdByTelegramIdAlias(userId, wrapperObject.getGroupName());
-		if (-1 == groupId) {
-			return new ResponseEntity<String>("Group not found!", HttpStatus.UNAUTHORIZED);
 		}
-		try {
-			objectRepository.deleteBySymbolGroup(wrapperObject.getSymbol(), groupId);
-		} catch(Exception e) {
-			System.out.println("KazanController.synObject:" + e);
-			return new ResponseEntity<String>("Cannot delete object!", HttpStatus.UNAUTHORIZED);
-		}
-		List<KazanObject> objects = wrapperObject.getObjects();
-		if (null != objects) {
-			for (KazanObject ko : objects) {
-				ko.setSymbol(wrapperObject.getSymbol());
-				ko.setTelegramId(userId);
-				ko.setGroupId(groupId);
-				ko.setUpdated_date(new Date());
-				objectRepository.add(ko);
-			}
-			Message newAlert = new Message();
-			newAlert.setTelegramId(userId);
-			newAlert.setGroupId(groupId);
-			newAlert.setMessageTime(new Date());
-			newAlert.setContent(wrapperObject.getUsername() + " updated data for " + wrapperObject.getSymbol() + " on " + wrapperObject.getPeriod());
-			newAlert.setMessageType(1);
-			newAlert.setSended(0);
-			Message resultAlert = messageRepository.add(newAlert);
-			if (null == resultAlert) {
-				return new ResponseEntity<String>("Error adding new alert after synchronizing object list!", HttpStatus.UNAUTHORIZED);
+		
+		List<String> groupAliases = wrapperObject.getGroupNames();
+		List<Integer> groupIds = new ArrayList<Integer>();
+		int groupId;
+		if (4 == wrapperObject.getMode() || 5 == wrapperObject.getMode()) {
+			for(String groupAliase:groupAliases) {
+				groupId = synObject(groupAliase, userId, wrapperObject.getSymbol(), wrapperObject.getMode(), wrapperObject.getObjects());
+				if(1!=groupId) groupIds.add(groupId);
 			}
 		} else {
-			return new ResponseEntity<String>("Just delete object list since no object received!", HttpStatus.ACCEPTED);
+			groupId = synObject(groupAliases.get(0), userId, wrapperObject.getSymbol(), wrapperObject.getMode(), wrapperObject.getObjects());
+			if(-1!=groupId) groupIds.add(groupId);
 		}
+		if(!wrapperObject.getObjects().isEmpty()  && !groupIds.isEmpty()) {
+			int TelegramBotType;
+			if(wrapperObject.getMode()==3) {
+				TelegramBotType =1;
+			} else {
+				TelegramBotType =2;
+			}
+			String content = wrapperObject.getUsername() + " - " + wrapperObject.getSymbol() + " _" + wrapperObject.getPeriod();
+			sendMessage(groupIds, wrapperObject.getMode(), TelegramBotType, content, wrapperObject.getNote(), wrapperObject.getImage());
+		}
+		
 		return new ResponseEntity<String>("Object list synchronized!", HttpStatus.ACCEPTED);
 	}
+	
+	private int synObject(String groupAliase,int userId, String symbol, int mode, List<BaseObject> objects) {
+		int groupId = ugrRepository.getGroupIdByGroupAlias(userId, groupAliase);
+		if (-1 == groupId) return -1;
+		int roleId = ugrRepository.getGroupRoleByUserId(userId, groupId, symbol); 
+		if(checkPushPermissionByRoleIdAndMode(roleId, mode)) {
+			try {
+				if(mode==3) {
+					objectNormalRepository.deleteBySymbolUserGroup(symbol, groupId, userId);	
+				} else if(mode==2) {
+					objectMasterRepository.deleteBySymbolGroup(symbol, groupId);
+				} else if(mode==4 || mode==5) {
+					objectAlertRepository.deleteBySymbolGroup(symbol, groupId);
+				}
+			} catch(Exception e) {
+				System.out.println("KazanController.synObject:" + e);
+				return -1;
+			}
+			if (objects != null && !objects.isEmpty()) {
+				for (BaseObject ko : objects) {
+					ko.setSymbol(symbol);
+					ko.setUserId(userId);
+					ko.setGroupId(groupId);
+					ko.setUpdated_date(new Date());
+					if(mode==3) {
+						objectNormalRepository.add((ObjectNormal) ko);	
+					} else if(mode==2) {
+						objectMasterRepository.add((ObjectMaster) ko);
+					} else if(mode==4 || mode==5) {
+						objectAlertRepository.add((ObjectAlert) ko);
+					}
+				}
+			}
+		}
+		return -1;
+	}
+	
+	private void sendMessage(List<Integer> groupIds, int mode, int TelegramBotType, String content, String  note, String imageUrl) {
+		List<Message> alertList = new ArrayList<Message>();
+		Message newAlert;
+		int telegramId, messageType;
+		String telegramTokenBot;
+		for(int groupId:groupIds) {
+			newAlert = new Message();
+			KazanGroup groupObject =  groupRepository.getGroupById(groupId);
+			List<Integer> listUserId = ugrRepository.getUserIdByGroupIdAndMode(groupId, mode);
+			telegramTokenBot = groupObject.getTokenBot(TelegramBotType);
+			for(int userId: listUserId) {
+				telegramId = userRepository.geTelegramId(userId);
+				if(!"".equalsIgnoreCase(telegramTokenBot) && -1!=userId) {
+					newAlert.setMessageTime(new Date());
+					newAlert.setNote(note);
+					newAlert.setContent(content);
+					newAlert.setImageUrl(imageUrl);
+					newAlert.setTelegramId(telegramId);
+					newAlert.setGroupName(groupObject.getGroupName());
+					newAlert.setCountSend(0);
+					newAlert.setTelegramTokenBot(telegramTokenBot);
+					newAlert.setMessageType(mode);
+					alertList.add(newAlert);
+				}
+			}	
+		}
+		removeDuplicateMessage(alertList);
+		sendMessagetoTelegram(alertList);
+		
+	}
+	private void sendMessagetoTelegram(List<Message> listMessage) {
+		String sendedContent;
+		for(Message message:listMessage) {
+			sendedContent = message.getGroupName().toUpperCase();
+			if(message.getCountSend()>0) {
+				sendedContent += " AND "+ Integer.toString(message.getCountSend()) + " MORE";
+			}
+			if(message.getMessageType()==2) {
+				sendedContent+= " MASTER: ";
+			} else if(message.getMessageType()==3) {
+				sendedContent+= " : ";
+			} else if(message.getMessageType()==4 || message.getMessageType()==5) {
+				sendedContent+= "ALERT : ";
+			}
+			sendedContent+= message.getNote();
+			sendedContent+= "\\n"+ message.getContent();
+			if(!"".equalsIgnoreCase(message.getImageUrl())) {
+				sendedContent+= "\\n \\n"+ message.getImageUrl();
+			}
+			//Tao thread để gửi voi timeout=120
+			System.out.println("send to "+ message.getTelegramId() +"by "+ message.getTelegramTokenBot()+" message :"+sendedContent);
+		}
+		
+//		
+	}
+	
+	//Remove duplicate Message list
+	// If Message allready exist  countSend++
+	private boolean existOnMessageList(List<Message> listMessage, Message checkMessage ) {
+		for(int i=0 ;i<listMessage.size();i++) {
+			if(listMessage.get(i).equals(checkMessage)) {
+				listMessage.get(i).addCountSend();
+				return true;
+			} 
+		}
+		return false;
+	}
+	private List<Message> removeDuplicateMessage(List<Message> inputMessageList){
+		List<Message> reslut = new ArrayList<Message>();
+		for(Message message: inputMessageList) {
+			if(!existOnMessageList(reslut ,message)) {
+				reslut.add(message);
+			}
+		}
+		return reslut;
+	}
+	//Remove duplicate Message list end
 	
 	@RequestMapping(method=RequestMethod.POST, path="/object/get")
 	public @ResponseBody ResponseEntity<String> getObject(@RequestBody ObjectRequestWrapper wrapperObject) {
 		int userId = userRepository.getIdByUsername(wrapperObject.getUsername());
+		List<String> groupAliases = wrapperObject.getGroupNames();
+		
 		if (-1 == userId) {
 			return new ResponseEntity<String>("Username not found!", HttpStatus.UNAUTHORIZED);
-		}		
-		int groupId = ugrRepository.getGroupIdByTelegramIdAlias(userId, wrapperObject.getGroupAliases().get(0));
+		}
+		String groupAliase = groupAliases.get(0);
+		int groupId = ugrRepository.getGroupIdByGroupAlias(userId, groupAliase);
 		if (-1 == groupId) {
 			return new ResponseEntity<String>("Group not found!", HttpStatus.UNAUTHORIZED);
 		}
-		ObjectMapper mapper = new ObjectMapper();
-		int mode = wrapperObject.getMode();
-		try {
-			switch (mode) {
-				case 2: 
-					return new ResponseEntity<String>(mapper.writeValueAsString(objectMasterRepository.getBySymbolGroup(wrapperObject.getSymbol(), userId, groupId)), HttpStatus.ACCEPTED);
-				case 3: 
-					return new ResponseEntity<String>(mapper.writeValueAsString(objectRepository.getBySymbolGroup(wrapperObject.getSymbol(), userId, groupId)), HttpStatus.ACCEPTED);
-				case 4: case 5: 
-					return new ResponseEntity<String>(mapper.writeValueAsString(objectAlertRepository.getBySymbolGroup(wrapperObject.getSymbol(), userId, groupId)), HttpStatus.ACCEPTED);
-				default:
-					return new ResponseEntity<String>("Undefined mode!", HttpStatus.UNAUTHORIZED);
+		int roleId = ugrRepository.getGroupRoleByUserId(userId, groupId, wrapperObject.getSymbol()); 
+		if(checkGetPermissionByRoleIdAndMode(roleId, wrapperObject.getMode())) {
+			ObjectMapper mapper = new ObjectMapper();
+			try {
+				int getFromUserId=-1;
+				if(! "".equalsIgnoreCase(wrapperObject.getGetFromUser())) {
+					getFromUserId = userRepository.getIdByUsername(wrapperObject.getGetFromUser());
+				}
+//				if(-1 == getFromUserId) {
+//					getFromUserId = objectNormalRepository.getLastUserId(wrapperObject.getSymbol(), groupId);
+//				}
+				return new ResponseEntity<String>(mapper.writeValueAsString(objectNormalRepository.getBySymbolGroup(wrapperObject.getSymbol(), getFromUserId, groupId)), HttpStatus.ACCEPTED);
+			} catch (JsonProcessingException e) {
+				System.out.println("KazanController.getObject:" + e);
+				return new ResponseEntity<String>("Error getting object!", HttpStatus.UNAUTHORIZED);
 			}
-			
-		} catch (JsonProcessingException e) {
-			System.out.println("KazanController.getObject:" + e);
+		} else {
 			return new ResponseEntity<String>("Error getting object!", HttpStatus.UNAUTHORIZED);
-		}		
+		}
+		
 	}
 	
 	@RequestMapping(method=RequestMethod.POST, path="/user/get")
-	public @ResponseBody ResponseEntity<String> getUser(@RequestBody ObjectRequestWrapper wrapperObject) {
-		return null;
+	public @ResponseBody ResponseEntity<String> userGet(@RequestBody ObjectRequestWrapper wrapperObject) {
+		//=============== sau nay phan nay se duoc config trong payment ====================
+		int configForMaxReturnUser = 10;
+		//===================================
+		int userId = userRepository.getIdByUsername(wrapperObject.getUsername());
+		List<String> groupAliases = wrapperObject.getGroupNames();
+		if (-1 == userId) {
+			return new ResponseEntity<String>("Username not found!", HttpStatus.UNAUTHORIZED);
+		}
+		String groupAliase = groupAliases.get(0);
+		System.out.println("groupAliase:" + groupAliase);
+		int groupId = ugrRepository.getGroupIdByGroupAlias(userId, groupAliase);
+		if (-1 == groupId) {
+			return new ResponseEntity<String>("Group not found!", HttpStatus.UNAUTHORIZED);
+		}
+		int roleId = ugrRepository.getGroupRoleByUserId(userId, groupId, wrapperObject.getSymbol()); 
+		int mode = wrapperObject.getMode();
+		if(checkUserGetPermissionByRoleIdAndMode(roleId, mode)) {
+			ObjectMapper mapper = new ObjectMapper();
+			try {
+				String[][] userObjects = null;
+				if (3 == mode)
+					userObjects  = objectNormalRepository.getUserIdAndUpdateTime(wrapperObject.getSymbol(), groupId);
+				else if (2 == mode)
+					userObjects  = objectMasterRepository.getUserIdAndUpdateTime(wrapperObject.getSymbol(), groupId);
+				return new ResponseEntity<String>(mapper.writeValueAsString(userObjects), HttpStatus.ACCEPTED);
+			} catch (JsonProcessingException e) {
+				System.out.println("KazanController.getObject:" + e);
+				return new ResponseEntity<String>("Error getting object!", HttpStatus.UNAUTHORIZED);
+			}
+		} else {
+			return new ResponseEntity<String>("Error getting object!", HttpStatus.UNAUTHORIZED);
+		}
+		
+	}
+	
+	@RequestMapping(path="/test")
+	public @ResponseBody String test() {
+		List<ObjectNormal> objectNormals = objectNormalRepository.getAll();
+		System.out.println("Normal size:" + objectNormals.size());
+		for (BaseObject o: objectNormals) {
+			System.out.println(o.getSymbol());
+		}
+		
+		List<ObjectAlert> objectAlerts = objectAlertRepository.getAll();
+		System.out.println("Alert size:" + objectAlerts.size());
+		for (BaseObject o: objectAlerts) {
+			System.out.println(o.getSymbol());
+		}
+		
+		List<ObjectMaster> objectMasters = objectMasterRepository.getAll();
+		System.out.println("Master size:" + objectMasters.size());
+		for (BaseObject o: objectMasters) {
+			System.out.println(o.getSymbol());
+		}
+		
+		String[][] userAndTime = objectNormalRepository.getUserIdAndUpdateTime("USDCAD", 1);		
+		for (int i = 0; i < userAndTime.length; i++) {
+			System.out.println(userAndTime[i][0] + "|" + userAndTime[i][1]);
+		}
+		
+		return "";
+	}
+	
+	boolean checkPushPermissionByRoleIdAndMode(int roleId, int mode) {
+		if(roleId==4 || roleId==5) return false;
+		if(roleId==3 && mode==3) return true;
+		if(roleId==2) return true;
+		return false;
+	} 
+	boolean checkGetPermissionByRoleIdAndMode(int roleId, int mode) {
+		if(mode>1 && roleId>=mode) return true;
+		return false;
+	}
+	boolean checkSendMessagePermissionByRoleIdAndMode(int roleId, int mode) {
+		if(roleId==2) return true;
+		return false;
+	}
+	boolean checkUserGetPermissionByRoleIdAndMode(int roleId, int mode) {
+		if(roleId==2 || roleId==3) return true;
+		return false;
 	}
 }

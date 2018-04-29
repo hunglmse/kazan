@@ -20,8 +20,8 @@ public class UserGroupRole implements Serializable {
 	private static final long serialVersionUID = -6698307116255363423L;
 
 	@Id
-	@Column(name="telegram_id")
-	private Integer telegramId;	
+	@Column(name="user_id")
+	private Integer userId;	
 	
 	@Id
 	@Column(name="group_id")
@@ -41,12 +41,12 @@ public class UserGroupRole implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date expiryDate;
 
-	public Integer getTelegramId() {
-		return telegramId;
+	public Integer getUserId() {
+		return userId;
 	}
 
-	public void setTelegramId(Integer telegramId) {
-		this.telegramId = telegramId;
+	public void setUserId(Integer userId) {
+		this.userId = userId;
 	}
 
 	public Integer getGroupId() {

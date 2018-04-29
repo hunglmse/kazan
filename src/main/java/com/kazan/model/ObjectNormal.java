@@ -4,5 +4,5 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "OBJECT_MASTER")
-public class ObjectMaster extends BaseObject {}
+@Table(name = "OBJECT")
+public class ObjectNormal extends BaseObject {}

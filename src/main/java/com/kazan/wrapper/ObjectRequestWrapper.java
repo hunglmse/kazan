@@ -2,25 +2,75 @@ package com.kazan.wrapper;
 
 import java.util.List;
 
-import com.kazan.model.KazanObject;
+import com.kazan.model.BaseObject;
 
 public class ObjectRequestWrapper {
 	private String username;
 	private String password;
-	private String groupName;
+	private List<String> groupAliases;
 	private String symbol;
 	private Integer mode;
 	private String accountName;
 	private String accountNumber;
 	private String accountServer;
-	private List<KazanObject> objects;
-	private String period;	
-	private List<String> groupAliases;	
-	public List<String> getGroupAliases() {
-		return groupAliases;
+	private List<BaseObject> objects;
+	private String period;
+	private Integer orderTicket;
+	private Double orderPrice;
+	private Double orderSL;
+	private Double orderTP;
+	private Integer orderType;
+	private String image;
+	private String note;
+	private String getFromUser;
+	
+	public Integer getOrderTicket() {
+		return orderTicket;
 	}
-	public void setGroupAliases(List<String> groupNames) {
-		this.groupAliases = groupNames;
+	public void setOrderTicket(Integer orderTicket) {
+		this.orderTicket = orderTicket;
+	}
+	public Double getOrderPrice() {
+		return orderPrice;
+	}
+	public void setOrderPrice(Double orderPrice) {
+		this.orderPrice = orderPrice;
+	}
+	public Double getOrderSL() {
+		return orderSL;
+	}
+	public void setOrderSL(Double orderSL) {
+		this.orderSL = orderSL;
+	}
+	public Double getOrderTP() {
+		return orderTP;
+	}
+	public void setOrderTP(Double orderTP) {
+		this.orderTP = orderTP;
+	}
+	public Integer getOrderType() {
+		return orderType;
+	}
+	public void setOrderType(Integer orderType) {
+		this.orderType = orderType;
+	}
+	public String getImage() {
+		return image;
+	}
+	public void setImage(String image) {
+		this.image = image;
+	}
+	public String getNote() {
+		return note;
+	}
+	public void setNote(String note) {
+		this.note = note;
+	}
+	public String getGetFromUser() {
+		return getFromUser;
+	}
+	public void setGetFromUser(String getFromUser) {
+		this.getFromUser = getFromUser;
 	}
 	public String getPeriod() {
 		return period;
@@ -40,11 +90,11 @@ public class ObjectRequestWrapper {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public String getGroupName() {
-		return groupName;
+	public List<String> getGroupNames() {
+		return groupAliases;
 	}
-	public void setGroupName(String groupName) {
-		this.groupName = groupName;
+	public void setGroupNames(List<String> groupAliases) {
+		this.groupAliases = groupAliases;
 	}
 	public String getSymbol() {
 		return symbol;
@@ -76,10 +126,10 @@ public class ObjectRequestWrapper {
 	public void setAccountServer(String accountServer) {
 		this.accountServer = accountServer;
 	}
-	public List<KazanObject> getObjects() {
+	public List<BaseObject> getObjects() {
 		return objects;
 	}
-	public void setObjects(List<KazanObject> objects) {
+	public void setObjects(List<BaseObject> objects) {
 		this.objects = objects;
 	}	
 }

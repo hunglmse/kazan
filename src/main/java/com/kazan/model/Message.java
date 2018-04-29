@@ -1,6 +1,8 @@
 package com.kazan.model;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,40 +12,55 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-@Entity
-@Table(name = "MESSAGE")
 public class Message {
 	
-	@Id
-	@GeneratedValue
-	@Column(name="message_id")
 	private Integer messageId;	
-	
-	@Column(name = "message_time")
-	@Temporal(TemporalType.TIMESTAMP)
 	private Date messageTime;
-	
-	@Column(name="note")
 	private String note;
-	
-	@Column(name="content")
 	private String content;
-	
-	@Column(name="image_url")
 	private String imageUrl;
 	
-	@Column(name="telegram_id")
 	private Integer telegramId;
+	private String groupName;
+	private Integer countSend;
 	
-	@Column(name="group_id")
-	private Integer groupId;
-	
-	@Column(name="sended")
-	private Integer sended;
-	
-	@Column(name="message_type")
+	private String telegramTokenBot;
 	private Integer messageType;
+	
+	public Integer getTelegramId() {
+		return telegramId;
+	}
 
+	public void setTelegramId(Integer telegramId) {
+		this.telegramId = telegramId;
+	}
+
+	public String getGroupName() {
+		return groupName;
+	}
+
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
+	}
+
+	public Integer getCountSend() {
+		return countSend;
+	}
+
+	public void setCountSend(Integer countSend) {
+		this.countSend = countSend;
+	}
+	public void addCountSend() {
+		this.countSend = this.countSend+1;
+	}
+
+	public String getTelegramTokenBot() {
+		return telegramTokenBot;
+	}
+
+	public void setTelegramTokenBot(String telegramTokenBot) {
+		this.telegramTokenBot = telegramTokenBot;
+	}	
 	public Integer getMessageId() {
 		return messageId;
 	}
@@ -84,29 +101,7 @@ public class Message {
 		this.imageUrl = imageUrl;
 	}
 
-	public Integer getTelegramId() {
-		return telegramId;
-	}
-
-	public void setTelegramId(Integer telegramId) {
-		this.telegramId = telegramId;
-	}
-
-	public Integer getGroupId() {
-		return groupId;
-	}
-
-	public void setGroupId(Integer groupId) {
-		this.groupId = groupId;
-	}
-
-	public Integer getSended() {
-		return sended;
-	}
-
-	public void setSended(Integer sended) {
-		this.sended = sended;
-	}
+	
 
 	public Integer getMessageType() {
 		return messageType;
@@ -116,4 +111,9 @@ public class Message {
 		this.messageType = messageType;
 	}
 	
+	public boolean equals(Message message) {
+		if(null == message || null == message.getTelegramId()) return false;
+	    if(this.telegramId == message.telegramId) return true;
+	    return false;
+	}
 }

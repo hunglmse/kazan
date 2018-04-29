@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kazan.model.ObjectAlert;
 
 @Repository
-public class ObjectAlertRepository {
+public class ObjectAlertRepository implements AbstractObjectRepository<ObjectAlert> {
 	
 	@Autowired
 	private SessionFactory sessionFactory;
@@ -69,5 +69,9 @@ public class ObjectAlertRepository {
 		sessionFactory.getCurrentSession().flush();
 		return t;
 	}
-
+	
+	@Transactional
+	public String[][] getUserIdAndUpdateTime(String symbol, Integer groupId) {
+		return null;
+	}
 }
