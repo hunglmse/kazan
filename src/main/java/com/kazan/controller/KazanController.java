@@ -255,7 +255,7 @@ public class KazanController {
 				}
 				
 				if(wrapperObject.getMode()==3) {
-					return new ResponseEntity<String>(mapper.writeValueAsString(objectNormalRepository.getBySymbolGroup(wrapperObject.getSymbol(), getFromUserId, groupId)), HttpStatus.ACCEPTED);
+					return new ResponseEntity<String>(mapper.writeValueAsString(objectNormalRepository.getBySymbolUserGroup(wrapperObject.getSymbol(), getFromUserId, groupId)), HttpStatus.ACCEPTED);
 				} else if(wrapperObject.getMode()==2) {
 					return new ResponseEntity<String>(mapper.writeValueAsString(objectMasterRepository.getBySymbolGroup(wrapperObject.getSymbol(), getFromUserId, groupId)), HttpStatus.ACCEPTED);
 				} else if(wrapperObject.getMode()==4 || wrapperObject.getMode()==5) {
