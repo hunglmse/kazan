@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kazan.component.SupplyDemandBotSender;
 import com.kazan.model.BaseObject;
 import com.kazan.model.KazanGroup;
 import com.kazan.model.Message;
@@ -29,7 +30,6 @@ import com.kazan.repository.UserRepository;
 import com.kazan.wrapper.AlertRequestWrapper;
 import com.kazan.wrapper.ObjectRequestWrapper;
 
-import ch.qos.logback.core.joran.conditional.ElseAction;
 import ch.qos.logback.core.net.SyslogOutputStream;
 
 @RestController    
@@ -56,6 +56,9 @@ public class KazanController {
 	
 	@Autowired
 	private GroupRepository groupRepository;
+	
+//	@Autowired
+//	private SupplyDemandBotSender supplyDemandBotSender;
 	
 	@RequestMapping(method=RequestMethod.POST, path="/message/add")
 	public @ResponseBody ResponseEntity<String> addAlert(@RequestBody AlertRequestWrapper alertWrapper) {
@@ -96,8 +99,10 @@ public class KazanController {
 		//Linh Dao update here
 		for(String groupAliase:groupAliases) {
 			groupId = synObject(groupAliase, userId, wrapperObject.getSymbol(), wrapperObject.getMode(), wrapperObject.getObjects());
-			if(1!=groupId) groupIds.add(groupId);
+			System.out.println("groupId:" + groupId);
+			if(-1!=groupId) groupIds.add(groupId);
 		}
+		System.out.println("groupIds size:" + groupIds.size());
 		if(!wrapperObject.getObjects().isEmpty()  && !groupIds.isEmpty()) {
 			int TelegramBotType;
 			if(wrapperObject.getMode()==3) {
@@ -119,7 +124,7 @@ public class KazanController {
 		if(checkPushPermissionByRoleIdAndMode(roleId, mode)) {
 			try {
 				if(mode==3) {
-					objectNormalRepository.deleteBySymbolUserGroup(symbol, groupId, userId);	
+					objectNormalRepository.deleteBySymbolUserGroup(symbol, userId, groupId);
 				} else if(mode==2) {
 					objectMasterRepository.deleteBySymbolGroup(symbol, groupId);
 				} else if(mode==4 || mode==5) {
@@ -144,6 +149,7 @@ public class KazanController {
 					}
 				}
 			}
+			return groupId;
 		}
 		return -1;
 	}
@@ -179,26 +185,29 @@ public class KazanController {
 		
 	}
 	private void sendMessagetoTelegram(List<Message> listMessage) {
-		String sendedContent;
+		System.out.println("size:"+listMessage.size());
+		String sendedContent = "";
 		for(Message message:listMessage) {
-			sendedContent = message.getGroupName().toUpperCase();
-			if(message.getCountSend()>0) {
-				sendedContent += " AND "+ Integer.toString(message.getCountSend()) + " MORE";
-			}
-			if(message.getMessageType()==2) {
-				sendedContent+= " MASTER: ";
-			} else if(message.getMessageType()==3) {
-				sendedContent+= " : ";
-			} else if(message.getMessageType()==4 || message.getMessageType()==5) {
-				sendedContent+= "ALERT : ";
-			}
-			sendedContent+= message.getNote();
-			sendedContent+= "\\n"+ message.getContent();
-			if(!"".equalsIgnoreCase(message.getImageUrl())) {
-				sendedContent+= "\\n \\n"+ message.getImageUrl();
-			}
-			//Tao thread để gửi voi timeout=120
-			System.out.println("send to "+ message.getTelegramId() +"by "+ message.getTelegramTokenBot()+" message :"+sendedContent);
+//			sendedContent = message.getGroupName().toUpperCase();
+//			if(message.getCountSend()>0) {
+//				sendedContent += " AND "+ Integer.toString(message.getCountSend()) + " MORE";
+//			}
+//			if(message.getMessageType()==2) {
+//				sendedContent+= " MASTER: ";
+//			} else if(message.getMessageType()==3) {
+//				sendedContent+= " : ";
+//			} else if(message.getMessageType()==4 || message.getMessageType()==5) {
+//				sendedContent+= "ALERT : ";
+//			}
+//			sendedContent+= message.getNote();
+//			sendedContent+= "\\n"+ message.getContent();
+//			if(!"".equalsIgnoreCase(message.getImageUrl())) {
+//				sendedContent+= "\\n \\n"+ message.getImageUrl();
+//			}
+//			//Tao thread để gửi voi timeout=120
+//			System.out.println("send to "+ message.getTelegramId() +"by "+ message.getTelegramTokenBot()+" message :"+sendedContent);
+//			int status = supplyDemandBotSender.sendMessage("354343853", "aaa");
+			
 		}
 		
 //		
@@ -313,28 +322,31 @@ public class KazanController {
 	
 	@RequestMapping(path="/test")
 	public @ResponseBody String test() {
-		List<ObjectNormal> objectNormals = objectNormalRepository.getAll();
-		System.out.println("Normal size:" + objectNormals.size());
-		for (BaseObject o: objectNormals) {
-			System.out.println(o.getSymbol());
-		}
-		
-		List<ObjectAlert> objectAlerts = objectAlertRepository.getAll();
-		System.out.println("Alert size:" + objectAlerts.size());
-		for (BaseObject o: objectAlerts) {
-			System.out.println(o.getSymbol());
-		}
-		
-		List<ObjectMaster> objectMasters = objectMasterRepository.getAll();
-		System.out.println("Master size:" + objectMasters.size());
-		for (BaseObject o: objectMasters) {
-			System.out.println(o.getSymbol());
-		}
-		
-		String[][] userAndTime = objectNormalRepository.getUserIdAndUpdateTime("USDCAD", 1);		
-		for (int i = 0; i < userAndTime.length; i++) {
-			System.out.println(userAndTime[i][0] + "|" + userAndTime[i][1]);
-		}
+//		List<ObjectNormal> objectNormals = objectNormalRepository.getAll();
+//		System.out.println("Normal size:" + objectNormals.size());
+//		for (BaseObject o: objectNormals) {
+//			System.out.println(o.getSymbol());
+//		}
+//		
+//		List<ObjectAlert> objectAlerts = objectAlertRepository.getAll();
+//		System.out.println("Alert size:" + objectAlerts.size());
+//		for (BaseObject o: objectAlerts) {
+//			System.out.println(o.getSymbol());
+//		}
+//		
+//		List<ObjectMaster> objectMasters = objectMasterRepository.getAll();
+//		System.out.println("Master size:" + objectMasters.size());
+//		for (BaseObject o: objectMasters) {
+//			System.out.println(o.getSymbol());
+//		}
+//		
+//		String[][] userAndTime = objectNormalRepository.getUserIdAndUpdateTime("USDCAD", 1);		
+//		for (int i = 0; i < userAndTime.length; i++) {
+//			System.out.println(userAndTime[i][0] + "|" + userAndTime[i][1]);
+//		}
+//		
+//		List<Message> listMessage = new ArrayList<Message>();
+//		sendMessagetoTelegram(listMessage);
 		
 		return "";
 	}
