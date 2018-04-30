@@ -32,7 +32,7 @@ public class UserGroupRoleRepository {
 			else
 				return result.getGroupId();
 		} catch (Exception e) {		
-			System.out.println("UserGroupRoleRepository.getGroupIdByTelegramIdAlias:" + e);
+			System.out.println("UserGroupRoleRepository.getGroupIdByGroupAlias:" + e);
 			return -1;
 		}
 	}
@@ -109,7 +109,7 @@ public class UserGroupRoleRepository {
 			}
 			return listUserId;
 		} catch (Exception e) {		
-			System.out.println("UserGroupRoleRepository.getGroupIdByTelegramIdAlias:" + e);
+			System.out.println("UserGroupRoleRepository.getUserIdByGroupIdAndMode:" + e);
 			return new ArrayList<Integer>();
 		}
 	}

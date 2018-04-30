@@ -37,7 +37,7 @@ public class KazanGroup {
 	private String mt4Password;
 	
 	@Column(name="notify_value")
-	private double notifyValue;
+	private Double notifyValue;
 	
 	@Column(name="notify_object_type")
 	private String notifyObjectType;
@@ -115,11 +115,11 @@ public class KazanGroup {
 		this.mt4Password = mt4Password;
 	}
 
-	public double getNotifyValue() {
+	public Double getNotifyValue() {
 		return notifyValue;
 	}
 
-	public void setNotifyValue(double notifyValue) {
+	public void setNotifyValue(Double notifyValue) {
 		this.notifyValue = notifyValue;
 	}
 

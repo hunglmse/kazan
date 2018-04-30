@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kazan.component.SupplyDemandBotSender;
+import com.kazan.component.TelegramSender;
 import com.kazan.model.BaseObject;
 import com.kazan.model.KazanGroup;
 import com.kazan.model.Message;
@@ -24,13 +24,10 @@ import com.kazan.model.ObjectMaster;
 import com.kazan.model.ObjectNormal;
 import com.kazan.repository.AbstractObjectRepository;
 import com.kazan.repository.GroupRepository;
-import com.kazan.repository.MessageRepository;
 import com.kazan.repository.UserGroupRoleRepository;
 import com.kazan.repository.UserRepository;
 import com.kazan.wrapper.AlertRequestWrapper;
 import com.kazan.wrapper.ObjectRequestWrapper;
-
-import ch.qos.logback.core.net.SyslogOutputStream;
 
 @RestController    
 @RequestMapping(path="/kazan")
@@ -46,9 +43,6 @@ public class KazanController {
 	private AbstractObjectRepository<ObjectAlert>  objectAlertRepository;	
 	
 	@Autowired
-	private MessageRepository messageRepository;
-	
-	@Autowired
 	private UserRepository userRepository;
 	
 	@Autowired
@@ -57,8 +51,8 @@ public class KazanController {
 	@Autowired
 	private GroupRepository groupRepository;
 	
-//	@Autowired
-//	private SupplyDemandBotSender supplyDemandBotSender;
+	@Autowired
+	private TelegramSender telegramSender;
 	
 	@RequestMapping(method=RequestMethod.POST, path="/message/add")
 	public @ResponseBody ResponseEntity<String> addAlert(@RequestBody AlertRequestWrapper alertWrapper) {
@@ -99,10 +93,8 @@ public class KazanController {
 		//Linh Dao update here
 		for(String groupAliase:groupAliases) {
 			groupId = synObject(groupAliase, userId, wrapperObject.getSymbol(), wrapperObject.getMode(), wrapperObject.getObjects());
-			System.out.println("groupId:" + groupId);
 			if(-1!=groupId) groupIds.add(groupId);
 		}
-		System.out.println("groupIds size:" + groupIds.size());
 		if(!wrapperObject.getObjects().isEmpty()  && !groupIds.isEmpty()) {
 			int TelegramBotType;
 			if(wrapperObject.getMode()==3) {
@@ -156,17 +148,16 @@ public class KazanController {
 	
 	private void sendMessage(List<Integer> groupIds, int mode, int TelegramBotType, String content, String  note, String imageUrl) {
 		List<Message> alertList = new ArrayList<Message>();
-		Message newAlert;
 		int telegramId, messageType;
 		String telegramTokenBot;
 		for(int groupId:groupIds) {
-			newAlert = new Message();
 			KazanGroup groupObject =  groupRepository.getGroupById(groupId);
 			List<Integer> listUserId = ugrRepository.getUserIdByGroupIdAndMode(groupId, mode);
 			telegramTokenBot = groupObject.getTokenBot(TelegramBotType);
-			for(int userId: listUserId) {
+			for(int userId: listUserId) {				
 				telegramId = userRepository.geTelegramId(userId);
 				if(!"".equalsIgnoreCase(telegramTokenBot) && -1!=userId) {
+					Message newAlert = new Message();
 					newAlert.setMessageTime(new Date());
 					newAlert.setNote(note);
 					newAlert.setContent(content);
@@ -185,32 +176,29 @@ public class KazanController {
 		
 	}
 	private void sendMessagetoTelegram(List<Message> listMessage) {
-		System.out.println("size:"+listMessage.size());
 		String sendedContent = "";
 		for(Message message:listMessage) {
-//			sendedContent = message.getGroupName().toUpperCase();
-//			if(message.getCountSend()>0) {
-//				sendedContent += " AND "+ Integer.toString(message.getCountSend()) + " MORE";
-//			}
-//			if(message.getMessageType()==2) {
-//				sendedContent+= " MASTER: ";
-//			} else if(message.getMessageType()==3) {
-//				sendedContent+= " : ";
-//			} else if(message.getMessageType()==4 || message.getMessageType()==5) {
-//				sendedContent+= "ALERT : ";
-//			}
-//			sendedContent+= message.getNote();
-//			sendedContent+= "\\n"+ message.getContent();
-//			if(!"".equalsIgnoreCase(message.getImageUrl())) {
-//				sendedContent+= "\\n \\n"+ message.getImageUrl();
-//			}
-//			//Tao thread để gửi voi timeout=120
-//			System.out.println("send to "+ message.getTelegramId() +"by "+ message.getTelegramTokenBot()+" message :"+sendedContent);
-//			int status = supplyDemandBotSender.sendMessage("354343853", "aaa");
+			sendedContent = message.getGroupName().toUpperCase();
+			if(message.getCountSend()>0) {
+				sendedContent += " AND "+ Integer.toString(message.getCountSend()) + " MORE";
+			}
+			if(message.getMessageType()==2) {
+				sendedContent+= " MASTER: ";
+			} else if(message.getMessageType()==3) {
+				sendedContent+= " : ";
+			} else if(message.getMessageType()==4 || message.getMessageType()==5) {
+				sendedContent+= "ALERT : ";
+			}
+			sendedContent+= message.getNote();
+			sendedContent+= System.lineSeparator() + message.getContent();
+			if(null != message.getImageUrl() && !"".equalsIgnoreCase(message.getImageUrl())) {
+		        sendedContent+= System.lineSeparator() + System.lineSeparator() + message.getImageUrl();
+		    }
+			
+			telegramSender.sendMessage(message.getTelegramTokenBot(), message.getTelegramId().toString(), sendedContent);
+			System.out.println("send to "+ message.getTelegramId() +"by "+ message.getTelegramTokenBot()+" message :"+sendedContent);
 			
 		}
-		
-//		
 	}
 	
 	//Remove duplicate Message list
@@ -294,7 +282,6 @@ public class KazanController {
 			return new ResponseEntity<String>("Username not found!", HttpStatus.UNAUTHORIZED);
 		}
 		String groupAliase = groupAliases.get(0);
-		System.out.println("groupAliase:" + groupAliase);
 		int groupId = ugrRepository.getGroupIdByGroupAlias(userId, groupAliase);
 		if (-1 == groupId) {
 			return new ResponseEntity<String>("Group not found!", HttpStatus.UNAUTHORIZED);

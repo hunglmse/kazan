@@ -1,5 +1,8 @@
 package com.kazan.repository;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +29,18 @@ public class GroupRepository {
 			else
 				return result;
 		} catch (Exception e) {		
-			System.out.println("UserGroupRoleRepository.getGroupIdByTelegramIdAlias:" + e);
+			System.out.println("GroupRepository.getGroupById:" + e);
 			return new KazanGroup();
+		}
+	}
+	
+	@Transactional
+	public List<KazanGroup> getAll() {
+		try {
+			return sessionFactory.getCurrentSession().createQuery("from KazanGroup").list();
+		} catch (Exception e) {		
+			System.out.println("GroupRepository.getAll:" + e);
+			return new ArrayList<KazanGroup>();
 		}
 	}
 }
