@@ -95,6 +95,8 @@ public class KazanController {
 			groupId = synObject(groupAliase, userId, wrapperObject.getSymbol(), wrapperObject.getMode(), wrapperObject.getObjects());
 			if(-1!=groupId) groupIds.add(groupId);
 		}
+		if (groupIds.isEmpty())
+			return new ResponseEntity<String>("No available group!", HttpStatus.UNAUTHORIZED);
 		if(!wrapperObject.getObjects().isEmpty()  && !groupIds.isEmpty()) {
 			int TelegramBotType;
 			if(wrapperObject.getMode()==3) {
@@ -148,7 +150,7 @@ public class KazanController {
 	
 	private void sendMessage(List<Integer> groupIds, int mode, int TelegramBotType, String content, String  note, String imageUrl) {
 		List<Message> alertList = new ArrayList<Message>();
-		int telegramId, messageType;
+		int telegramId;
 		String telegramTokenBot;
 		for(int groupId:groupIds) {
 			KazanGroup groupObject =  groupRepository.getGroupById(groupId);
@@ -171,7 +173,7 @@ public class KazanController {
 				}
 			}	
 		}
-		removeDuplicateMessage(alertList);
+		alertList = removeDuplicateMessage(alertList);
 		sendMessagetoTelegram(alertList);
 		
 	}
@@ -187,9 +189,10 @@ public class KazanController {
 			} else if(message.getMessageType()==3) {
 				sendedContent+= " : ";
 			} else if(message.getMessageType()==4 || message.getMessageType()==5) {
-				sendedContent+= "ALERT : ";
+				sendedContent+= " ALERT : ";
 			}
-			sendedContent+= message.getNote();
+			if (null != message.getNote())
+				sendedContent+= message.getNote();
 			sendedContent+= System.lineSeparator() + message.getContent();
 			if(null != message.getImageUrl() && !"".equalsIgnoreCase(message.getImageUrl())) {
 		        sendedContent+= System.lineSeparator() + System.lineSeparator() + message.getImageUrl();

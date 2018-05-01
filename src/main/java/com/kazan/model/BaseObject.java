@@ -413,4 +413,204 @@ public class BaseObject {
 		this.setUpdated_date(bo.getUpdated_date());
 		this.setUserId(bo.getUserId());		
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((groupId == null) ? 0 : groupId.hashCode());
+		result = prime * result + ((objectId == null) ? 0 : objectId.hashCode());
+		result = prime * result + ((objprop_angle == null) ? 0 : objprop_angle.hashCode());
+		result = prime * result + ((objprop_back == null) ? 0 : objprop_back.hashCode());
+		result = prime * result + ((objprop_color == null) ? 0 : objprop_color.hashCode());
+		result = prime * result + ((objprop_corner == null) ? 0 : objprop_corner.hashCode());
+		result = prime * result + ((objprop_deviation == null) ? 0 : objprop_deviation.hashCode());
+		result = prime * result + ((objprop_direction == null) ? 0 : objprop_direction.hashCode());
+		result = prime * result + ((objprop_ellipse == null) ? 0 : objprop_ellipse.hashCode());
+		result = prime * result + ((objprop_fibolevels == null) ? 0 : objprop_fibolevels.hashCode());
+		result = prime * result + ((objprop_font == null) ? 0 : objprop_font.hashCode());
+		result = prime * result + ((objprop_fontsize == null) ? 0 : objprop_fontsize.hashCode());
+		result = prime * result + ((objprop_levelcolor == null) ? 0 : objprop_levelcolor.hashCode());
+		result = prime * result + ((objprop_levelstyle == null) ? 0 : objprop_levelstyle.hashCode());
+		result = prime * result + ((objprop_levelwidth == null) ? 0 : objprop_levelwidth.hashCode());
+		result = prime * result + ((objprop_price1 == null) ? 0 : objprop_price1.hashCode());
+		result = prime * result + ((objprop_price2 == null) ? 0 : objprop_price2.hashCode());
+		result = prime * result + ((objprop_price3 == null) ? 0 : objprop_price3.hashCode());
+		result = prime * result + ((objprop_ray_right == null) ? 0 : objprop_ray_right.hashCode());
+		result = prime * result + ((objprop_scale == null) ? 0 : objprop_scale.hashCode());
+		result = prime * result + ((objprop_style == null) ? 0 : objprop_style.hashCode());
+		result = prime * result + ((objprop_text == null) ? 0 : objprop_text.hashCode());
+		result = prime * result + ((objprop_time1 == null) ? 0 : objprop_time1.hashCode());
+		result = prime * result + ((objprop_time2 == null) ? 0 : objprop_time2.hashCode());
+		result = prime * result + ((objprop_time3 == null) ? 0 : objprop_time3.hashCode());
+		result = prime * result + ((objprop_type == null) ? 0 : objprop_type.hashCode());
+		result = prime * result + ((objprop_width == null) ? 0 : objprop_width.hashCode());
+		result = prime * result + ((symbol == null) ? 0 : symbol.hashCode());
+		result = prime * result + ((updated_date == null) ? 0 : updated_date.hashCode());
+		result = prime * result + ((userId == null) ? 0 : userId.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		BaseObject other = (BaseObject) obj;
+		if (groupId == null) {
+			if (other.groupId != null)
+				return false;
+		} else if (!groupId.equals(other.groupId))
+			return false;
+		if (objectId == null) {
+			if (other.objectId != null)
+				return false;
+		} else if (!objectId.equals(other.objectId))
+			return false;
+		if (objprop_angle == null) {
+			if (other.objprop_angle != null)
+				return false;
+		} else if (!objprop_angle.equals(other.objprop_angle))
+			return false;
+		if (objprop_back == null) {
+			if (other.objprop_back != null)
+				return false;
+		} else if (!objprop_back.equals(other.objprop_back))
+			return false;
+		if (objprop_color == null) {
+			if (other.objprop_color != null)
+				return false;
+		} else if (!objprop_color.equals(other.objprop_color))
+			return false;
+		if (objprop_corner == null) {
+			if (other.objprop_corner != null)
+				return false;
+		} else if (!objprop_corner.equals(other.objprop_corner))
+			return false;
+		if (objprop_deviation == null) {
+			if (other.objprop_deviation != null)
+				return false;
+		} else if (!objprop_deviation.equals(other.objprop_deviation))
+			return false;
+		if (objprop_direction == null) {
+			if (other.objprop_direction != null)
+				return false;
+		} else if (!objprop_direction.equals(other.objprop_direction))
+			return false;
+		if (objprop_ellipse == null) {
+			if (other.objprop_ellipse != null)
+				return false;
+		} else if (!objprop_ellipse.equals(other.objprop_ellipse))
+			return false;
+		if (objprop_fibolevels == null) {
+			if (other.objprop_fibolevels != null)
+				return false;
+		} else if (!objprop_fibolevels.equals(other.objprop_fibolevels))
+			return false;
+		if (objprop_font == null) {
+			if (other.objprop_font != null)
+				return false;
+		} else if (!objprop_font.equals(other.objprop_font))
+			return false;
+		if (objprop_fontsize == null) {
+			if (other.objprop_fontsize != null)
+				return false;
+		} else if (!objprop_fontsize.equals(other.objprop_fontsize))
+			return false;
+		if (objprop_levelcolor == null) {
+			if (other.objprop_levelcolor != null)
+				return false;
+		} else if (!objprop_levelcolor.equals(other.objprop_levelcolor))
+			return false;
+		if (objprop_levelstyle == null) {
+			if (other.objprop_levelstyle != null)
+				return false;
+		} else if (!objprop_levelstyle.equals(other.objprop_levelstyle))
+			return false;
+		if (objprop_levelwidth == null) {
+			if (other.objprop_levelwidth != null)
+				return false;
+		} else if (!objprop_levelwidth.equals(other.objprop_levelwidth))
+			return false;
+		if (objprop_price1 == null) {
+			if (other.objprop_price1 != null)
+				return false;
+		} else if (!objprop_price1.equals(other.objprop_price1))
+			return false;
+		if (objprop_price2 == null) {
+			if (other.objprop_price2 != null)
+				return false;
+		} else if (!objprop_price2.equals(other.objprop_price2))
+			return false;
+		if (objprop_price3 == null) {
+			if (other.objprop_price3 != null)
+				return false;
+		} else if (!objprop_price3.equals(other.objprop_price3))
+			return false;
+		if (objprop_ray_right == null) {
+			if (other.objprop_ray_right != null)
+				return false;
+		} else if (!objprop_ray_right.equals(other.objprop_ray_right))
+			return false;
+		if (objprop_scale == null) {
+			if (other.objprop_scale != null)
+				return false;
+		} else if (!objprop_scale.equals(other.objprop_scale))
+			return false;
+		if (objprop_style == null) {
+			if (other.objprop_style != null)
+				return false;
+		} else if (!objprop_style.equals(other.objprop_style))
+			return false;
+		if (objprop_text == null) {
+			if (other.objprop_text != null)
+				return false;
+		} else if (!objprop_text.equals(other.objprop_text))
+			return false;
+		if (objprop_time1 == null) {
+			if (other.objprop_time1 != null)
+				return false;
+		} else if (!objprop_time1.equals(other.objprop_time1))
+			return false;
+		if (objprop_time2 == null) {
+			if (other.objprop_time2 != null)
+				return false;
+		} else if (!objprop_time2.equals(other.objprop_time2))
+			return false;
+		if (objprop_time3 == null) {
+			if (other.objprop_time3 != null)
+				return false;
+		} else if (!objprop_time3.equals(other.objprop_time3))
+			return false;
+		if (objprop_type == null) {
+			if (other.objprop_type != null)
+				return false;
+		} else if (!objprop_type.equals(other.objprop_type))
+			return false;
+		if (objprop_width == null) {
+			if (other.objprop_width != null)
+				return false;
+		} else if (!objprop_width.equals(other.objprop_width))
+			return false;
+		if (symbol == null) {
+			if (other.symbol != null)
+				return false;
+		} else if (!symbol.equals(other.symbol))
+			return false;
+		if (updated_date == null) {
+			if (other.updated_date != null)
+				return false;
+		} else if (!updated_date.equals(other.updated_date))
+			return false;
+		if (userId == null) {
+			if (other.userId != null)
+				return false;
+		} else if (!userId.equals(other.userId))
+			return false;
+		return true;
+	}
+	
 }

@@ -1,16 +1,6 @@
 package com.kazan.model;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 public class Message {
 	
@@ -100,9 +90,7 @@ public class Message {
 	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
 	}
-
 	
-
 	public Integer getMessageType() {
 		return messageType;
 	}
@@ -110,10 +98,30 @@ public class Message {
 	public void setMessageType(Integer messageType) {
 		this.messageType = messageType;
 	}
-	
-	public boolean equals(Message message) {
-		if(null == message || null == message.getTelegramId()) return false;
-	    if(this.telegramId == message.telegramId) return true;
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((content == null) ? 0 : content.hashCode());
+		result = prime * result + ((countSend == null) ? 0 : countSend.hashCode());
+		result = prime * result + ((groupName == null) ? 0 : groupName.hashCode());
+		result = prime * result + ((imageUrl == null) ? 0 : imageUrl.hashCode());
+		result = prime * result + ((messageId == null) ? 0 : messageId.hashCode());
+		result = prime * result + ((messageTime == null) ? 0 : messageTime.hashCode());
+		result = prime * result + ((messageType == null) ? 0 : messageType.hashCode());
+		result = prime * result + ((note == null) ? 0 : note.hashCode());
+		result = prime * result + ((telegramId == null) ? 0 : telegramId.hashCode());
+		result = prime * result + ((telegramTokenBot == null) ? 0 : telegramTokenBot.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		Message message = (Message) o;
+		if(null == message || null == message.getTelegramId() || null == this.telegramId) return false;
+		System.out.println(this.telegramId + "|" + message.telegramId + "|" + (this.telegramId.equals(message.telegramId)));
+	    if(this.telegramId.equals(message.telegramId)) return true;
 	    return false;
 	}
 }
