@@ -248,7 +248,8 @@ public class KazanController {
 				}
 				if(-1 == getFromUserId) {
 					String[][] userUpdate = objectNormalRepository.getUserIdAndUpdateTime(wrapperObject.getSymbol(), groupId);
-					getFromUserId = userRepository.getIdByUsername(userUpdate[0][0]);
+					if (userUpdate.length > 0 && userUpdate[0].length > 0)
+						getFromUserId = userRepository.getIdByUsername(userUpdate[0][0]);
 				}
 				
 				if(wrapperObject.getMode()==3) {
