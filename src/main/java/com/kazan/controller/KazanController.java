@@ -129,11 +129,12 @@ public class KazanController {
 				return -1;
 			}
 			if (objects != null && !objects.isEmpty()) {
+				Date objectUdatedDate = new Date();
 				for (BaseObject ko : objects) {
 					ko.setSymbol(symbol);
 					ko.setUserId(userId);
 					ko.setGroupId(groupId);
-					ko.setUpdated_date(new Date());
+					ko.setUpdated_date(objectUdatedDate);
 					if(mode==3) {
 						objectNormalRepository.add(new ObjectNormal(ko));	
 					} else if(mode==2) {
